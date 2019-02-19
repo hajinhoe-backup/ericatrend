@@ -88,10 +88,7 @@ def productDetails(productID):
             print("All Related Product Reviews 체크박스가 존재하지 않습니다.")
     finally:
         pass
-
-    i=0
-    reviews = [] # 현재 페이지에 있는 모든 리뷰
-    allReview = [] # (Pros, Cons, Other)로 구성된 하나의 dict가 담길 list
+    productTitle = driver.find_element_by_id("grpDescrip_"+productID).text
     startTime = time.time()
     f = open("./data/review_info.csv", "a", encoding="utf-8", newline="")
     wr = csv.writer(f)
@@ -99,23 +96,31 @@ def productDetails(productID):
     while(True): #
         html = driver.page_source
         selectedItem = BeautifulSoup(html, "lxml")
-        reviews = selectedItem.findAll("div", {"class" : "comments-cell"})
-
+        reviews = selectedItem.findAll("div", {"class" : "comments-cell"}, {"itemprop" : "review"})
         for review in reviews:
-            try:
-                wr.writerow([review.find("span", {"itemprop" : "ratingValue"}).text, \
-                     review.find("span", {"class" : "comments-title-content"}).text, \
-                     review.find("span", {"class" : "comments-time-right"})['content'], \
-                     review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True), \
-                     review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True), \
-                     review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True)])
-            except IndexError as e:
-                print(e)
-            except AttributeError as e:
-                print(e)
+            try: # customer review
+                wr.writerow([productTitle, \
+                    review.find("span", {"itemprop" : "ratingValue"}).text, \
+                    review.find("span", {"class" : "comments-title-content"}).text, \
+                    review.find("span", {"class" : "comments-time-right"})['content'], \
+                    review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True), \
+                    review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True), \
+                    review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True)])
+            except AttributeError as e: # MFr's response
+                print("mfs's resoponse : ",e)
+                pass
+            except IndexError as e: # No Other Thoughts
+                print("there is no other thoughts section : ",e)
+                wr.writerow([productTitle, \
+                    review.find("span", {"itemprop" : "ratingValue"}).text, \
+                    review.find("span", {"class" : "comments-title-content"}).text, \
+                    review.find("span", {"class" : "comments-time-right"})['content'], \
+                    review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True), \
+                    review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True), \
+                    "None"])
         driver.execute_script("Biz.ProductReview2017.Pagination.nextbuttonClick()") # 다음 리뷰페이지로 넘김
         btn = selectedItem.find_all("button", {"onclick": "Biz.ProductReview2017.Pagination.nextbuttonClick()"})
-
+        print("test")
         if (len(btn) == 0): # 다음 버튼이 아예 존재하지 않거나
             break
         elif (btn[0].get("disabled") == ""): # disabled 속성이면 루프 중단
@@ -130,7 +135,7 @@ def productDetails(productID):
     print("총 가동 시간 : ",endTime1)
 
 
-    return render_template("reviews.html", allReview=allReview)
+    return render_template("reviews.html")
 
 if __name__ == '__main__':
     app.debug = True
