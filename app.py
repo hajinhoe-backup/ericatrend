@@ -14,6 +14,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
+import pricetocsv
+
 app = Flask(__name__)
 
 def urlConnect(url):
@@ -27,18 +29,9 @@ def extractSpec(driver, productID):
     driver.get(
             "https://www.newegg.com/Product/Product.aspx?Page=2&reviews=all&Item=" + productID + "&Pagesize=100&IsFeedbackTab=true")
     try: # 해당 ID 컴포넌트 로딩까지 최대 10초 대기, js 수행 후 작업을 시작하기 위해 (js로 AllRelatedProduct 체크박스가 체크됨)
-        button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "prAllRelatedProduct")))
-    except TimeoutException:
-        isExistReview = driver.execute_script("return Biz.ProductReview2017.PageUrlconfig['Pagesize']")  # 리뷰 페이지 수를 확인
-        if (isExistReview == ""):                     # 리뷰 페이지 값이 들어있지 않으면,
-            driver.quit()                             # 드라이버를 종료하고,
-            return render_template("noReviews.html")  # 안내페이지로 이동
-        else: # 리뷰는 존재하지만 수가 적어서 2개 이상의 페이지가 없는 경우 / 일부 리뷰에서 버튼자체가 없는 페이지가 보임 / 파싱은 진행가능
-            print("All Related Product Reviews 체크박스가 존재하지 않습니다.")
-    finally:
-        print("finally / pass")
-        pass
-
+        button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "Details_Tab")))
+    except TimeoutException as e:
+        print(e," : Cannot load a Details Tab..")
     html_detail = driver.page_source
     soup_detail = BeautifulSoup(html_detail, 'lxml')
 
@@ -49,6 +42,10 @@ def extractSpec(driver, productID):
     for data in model_html:
         model_dict[data.contents[0].string] = data.contents[1].string
     print(model_dict)
+    
+    make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
+    make_csv.make_price_csv(model_dict['Brand'], model_dict['Model'])
+
     driver.find_element_by_id("Community_Tab").click()
     return driver, model_dict
 
@@ -98,17 +95,20 @@ def productDetails(productID):
     driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
     driver, model_dict = extractSpec(driver, productID)
 
-    cacheDriver = driver.application_cache
     endTime = time.time() - startTime
     print("드라이버 구동시간 : ", endTime)
+    startTime = time.time()
 
     productTitle = driver.find_element_by_id("FeedBackShortTitle").text
-    startTime = time.time()
-    f = open("review_info.csv", "a", encoding="utf-8", newline="")
+    f = open("./data/review_info.csv", "a", encoding="utf-8", newline="")
     wr = csv.writer(f)
+    wr.writerow(["Brand","Model","Star","Title","Date","Pros","Cons","Other"])
 
     while(True): #
-        time.sleep(5)
+        try:
+            dropdown = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "reviewPageSize")))
+        except TimeoutException as e:
+            print(e," : Loading took too much time...")
         html = driver.page_source
         selectedItem = BeautifulSoup(html, "lxml")
         reviews = selectedItem.findAll("div", {"itemprop" : "review"})
