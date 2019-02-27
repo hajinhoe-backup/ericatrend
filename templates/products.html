@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>products</title>
+</head>
+<body>
+    <div>
+        {% for i, count in productDict.items() %}
+            <div id="product">
+                <img src={{ count["img"] }}>
+                <a href="/review/{{ count["id"] }}">
+                    {{ count["title"] }}
+                </a>
+            </div>
+            <br>
+        {% endfor %}
+    <a href="/{{ keyword }}/{{ nextpageNum }}">Next</a>
+    </div>
+</body>
+</html>

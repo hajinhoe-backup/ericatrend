@@ -1,0 +1,10 @@
+body{
+  background: #343d46;
+}
+
+.box{
+  position : relative;
+  margin:auto;
+  width: 300px;
+  height: 100px;
+}

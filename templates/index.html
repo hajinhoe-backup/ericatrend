@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="../static/index.css">
+    <meta charset="UTF-8">
+    <title>This is a test page.</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js" ></script>
+    <script>
+        function keywordSubmit() {
+            var keyowrd = $("#search").val()
+            keyword = keyowrd.replace(" ", "%20")
+        window.location.href = "/"+keyowrd+"/1"
+        }
+    </script>
+</head>
+<body>
+    <div class="box">
+      <div class="container-1">
+          <span class="icon"><i class="fa fa-search"></i></span>
+            <input type="search" id="search" placeholder="Search..." onkeyup="if (event.keyCode==13){keywordSubmit();} ">
+      </div>
+    </div>
+</body>
+</html>

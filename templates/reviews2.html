@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for review in allReview%}
+    {% if not count['mf'] %}
+        {{ count['pros'] }}<br>
+        {{ count['cons'] }}<br>
+        {{ count['other'] }}<br>
+
+    {% else %}
+        Manufacturer :{{ count['mf'] }}<br>
+    {% endif %}
+
+
+{% endfor %}
+</body>
+</html>

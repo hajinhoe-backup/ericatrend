@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for review in allReview%}
+    {% for i, count in review.items() %}
+        <div id="review" style="border: #343d46 solid 1px">
+            {% if not count['mf'] %}
+            {{ count['pros'] }}<br>
+            {{ count['cons'] }}<br>
+            {{ count['other'] }}<br>
+
+            {% else %}
+                Manufacturer :{{ count['mf'] }}<br>
+            {% endif %}
+        </div>
+        <br>
+    {% endfor %}
+
+{% endfor %}
+</body>
+</html>
