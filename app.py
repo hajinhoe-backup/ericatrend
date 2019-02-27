@@ -28,7 +28,7 @@ def extractSpec(driver, productID):
     print("exractSpec START")
     driver.get(
             "https://www.newegg.com/Product/Product.aspx?Page=2&reviews=all&Item=" + productID + "&Pagesize=100&IsFeedbackTab=true")
-    try: i # Details_Tab 로드까지 대기
+    try: # 해당 ID 컴포넌트 로딩까지 최대 10초 대기, js 수행 후 작업을 시작하기 위해 (js로 AllRelatedProduct 체크박스가 체크됨)
         button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "Details_Tab")))
     except TimeoutException as e:
         print(e," : Cannot load a Details Tab..")
@@ -53,7 +53,7 @@ def extractSpec(driver, productID):
 @app.route('/')
 def hello_world():
     print("hi")
-    # return render_template("index.html")
+    return render_template("index.html")
 
 @app.route('/<keyword>/<pageNum>')
 def productList(keyword, pageNum):
@@ -77,7 +77,7 @@ def productList(keyword, pageNum):
                 pageNum) + "&Description=" + keyword)
     productDict = findProductId(productList)
 
-    # return render_template("products.html", productDict=productDict, keyword=keyword, nextpageNum=int(pageNum)+1, prevpageNum=int(pageNum)-1)
+    return render_template("products.html", productDict=productDict, keyword=keyword, nextpageNum=int(pageNum)+1, prevpageNum=int(pageNum)-1)
 
 @app.route('/review/<productID>')
 def productDetails(productID):
@@ -210,8 +210,8 @@ def productDetails(productID):
     endTime1 = time.time() - startTime1
     print("총 가동 시간 : ",endTime1)
 
-    return
-    # return render_template("reviews.html")
+
+    return render_template("reviews.html")
 
 if __name__ == '__main__':
     app.debug = True
