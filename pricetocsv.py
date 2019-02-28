@@ -84,14 +84,11 @@ class PriceToCSV:
             print('There are no items for the keyword or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
 make_csv.save_csv('amd', 'yd270xbgafbox')
 make_csv.save_csv('apple', 'iphoneX')
-'''
-'''
 변경점
 쓰기 전에 make_csv.create_csv 필요 (필요에 따라 파일 네임을 인자로 줄수있고, 기본값도있음)
 make_price_csv의 이름이 save_csv로 변경
