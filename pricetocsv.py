@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
-import keepaAPI
+import keepa
 import csv
 import time
 
@@ -16,7 +16,7 @@ class NoItems(Exception):
 class PriceToCSV:
     def __init__(self, keepa_accesskey):
         self.keepa_accesskey = keepa_accesskey
-        self.keepa_api = keepaAPI.API(keepa_accesskey)
+        self.keepa_api = keepa.Keepa(keepa_accesskey)
         self.saved_file_name = 'price_info'
         self.is_file_created = False
         gecko_options = Options()
@@ -63,7 +63,7 @@ class PriceToCSV:
                 csv_writer.writerow([brand, model, note] + list(row))
 
     def get_prices(self, product_asin):
-        products = self.keepa_api.ProductQuery(product_asin)
+        products = self.keepa_api.query(product_asin)
         product = products[0]
         price_zip_list = list(zip(product['data']['NEW_time'], product['data']['NEW']))
         return price_zip_list

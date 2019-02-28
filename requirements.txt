@@ -7,11 +7,10 @@ Flask==1.0.2
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
-keepaAPI==0.15.10
+Keepa
 lxml==4.3.1
 MarkupSafe==1.1.0
 numpy==1.16.1
-pkg-resources==0.0.0
 requests==2.21.0
 selenium==3.141.0
 soupsieve==1.8
