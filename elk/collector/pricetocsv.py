@@ -1,9 +1,30 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from bs4 import BeautifulSoup
 import keepa
 import csv
-import time
+import re
+from google import google
+
+'''
+딱히 기존 코드 부분은 변경하지 않고, model , brand가 없을 때만 
+ save_cvs('', '', '제목') 형태로 호출하면 됩니다.
+'''
+'''
+이번 버전에서 변경된 점:
+뉴에그와 아마존의 상품정보가 100% 일치 하지 않을 수도 있으므로 ASIN 정보를 추가적으로 기입함.
+google 검색을 통해 아마존을 검색함 (검색 정확도 향상)
+아마존 주소체계:
+https://www.amazon.com/Dell-Inspiron-7000-Touchscreen-Quad-Core/dp/B01NCHZTMY
+https://www.amazon.com/키워드/dp/ASIN
+
+brand 나 model이 없는 경우 빈 스트링 입력후, 제목 입력 바람
+(즉, save_cvs('', '', '제목') 형태로 호출
+신규 의존성 : pip install git+https://github.com/abenassi/Google-Search-API
+'''
+'''
+조금 의논이 필요한 사항,
+brand하고 model이 없는 경우,
+brand의 경우 대부분 맨 앞에 있는 단어인데,
+이것을 문자열 처리로 저장해서 cvs에 저장할 데이터로 취급 할 것인가?
+'''
 
 class NoFile(Exception):
     pass
@@ -19,48 +40,33 @@ class PriceToCSV:
         self.keepa_api = keepa.Keepa(keepa_accesskey)
         self.saved_file_name = 'price_info'
         self.is_file_created = False
-        gecko_options = Options()
-        gecko_options.headless = True
-        self.web_driver = webdriver.Firefox(options=gecko_options, executable_path='./geckodriver')
 
     def get_asin(self, product_name):
-        # 아마존 검색어로 asin을 알아옴. 서버 상황에 따라 최대 3회 검색 시도.
-        # 성공시 해당 물건의 asin 리턴, 실패시 에러 (서버에 접속 불가하거나, 물건이 없는 경우)
-        searched_items = None
+        # 구글을 통해 아마존 검색 후, asin을 구할 수 있으면 넘겨 주고,
+        # 그렇지 않은 경우 다음 검색결과에서 asin을 찾아보고 넘겨준다. 최대 5번 시도.
+        searched_items = google.search('site:www.amazon.com ' + product_name, 1)
 
-        for i in range(5):
-            # 최대 5회 아마존에서 검색을 시도 한다.
-            self.web_driver.get('https://www.amazon.com/s?k=' + product_name)
-            html = self.web_driver.page_source
-            souped_html = BeautifulSoup(html, 'html.parser')
-            searched_items = souped_html.find_all('div', {'data-index': '0'}, limit=1)
+        for item in searched_items:
+            if item.link:
+                product_asin = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item.link).group('ASIN')
+                if product_asin:
+                    return product_asin
 
-            if searched_items:
-                break
-
-            time.sleep(0.3)  # 실패시 잠시 쉼
-
-        if not searched_items:
-            raise NoItems
-
-        first_item = searched_items[0]
-        product_asin = first_item.attrs['data-asin']
-
-        return product_asin
+        raise NoItems
 
     def create_csv(self, file_name=None):
         if file_name:
             self.saved_file_name = file_name
         with open('{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(['brand', 'model', 'note', 'date', 'price'])
+            csv_writer.writerow(['brand', 'model', 'note', 'asin', 'date', 'price'])
         self.is_file_created = True
 
-    def write_csv(self, brand, model, note, price_zip_list):
+    def write_csv(self, brand, model, note, product_asin, price_zip_list):
         with open('{0}.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             for row in price_zip_list:
-                csv_writer.writerow([brand, model, note] + list(row))
+                csv_writer.writerow([brand, model, note, product_asin] + list(row))
 
     def get_prices(self, product_asin):
         products = self.keepa_api.query(product_asin)
@@ -76,19 +82,21 @@ class PriceToCSV:
                 note = ' '.join(list(args))
             else:
                 note = ''
-            product_asin = self.get_asin(' '.join([brand, model, note]))
+            product_asin = self.get_asin((' '.join([brand, model, note])).strip())
             price_zip_list = self.get_prices(product_asin)
-            self.write_csv(brand, model, note, price_zip_list)
+            self.write_csv(brand, model, note, product_asin, price_zip_list)
             print('Done!')
         except NoItems:
             print('There are no items for the keyword or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-'''
+
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
-make_csv.save_csv('amd', 'yd270xbgafbox')
+make_csv.save_csv('', '', 'HP Pavilion 15t Premium Touch Laptop (Intel 8th Gen i7-8550U quad core, 8GB RAM, 1TB HDD + 128GB Sata SSD, 15.6 FHD 1920 x 1080, GeForce MX150, Backlit Keyboard, Win 10 Home) Sapphire Blue')
 make_csv.save_csv('apple', 'iphoneX')
+
+'''
 변경점
 쓰기 전에 make_csv.create_csv 필요 (필요에 따라 파일 네임을 인자로 줄수있고, 기본값도있음)
 make_price_csv의 이름이 save_csv로 변경
