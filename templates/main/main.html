@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% block head %}
+    <link rel="stylesheet" href="../../static/main.css">
 {% endblock %}
 
 {% block body %}
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+    <div id="main">
+        <h1>에리카 트렌드</h1>
+        <div id = "search_box" class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+            </div>
         </div>
     </div>
 {% endblock %}
