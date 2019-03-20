@@ -1,16 +1,9 @@
-import argparse
 import time
 import re
-import os
-import random
 import csv
 from urllib.request import urlopen
-import urllib
-import requests
 from bs4 import BeautifulSoup
-from lxml.html import fromstring
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
@@ -30,7 +23,7 @@ class Newegg_Crawler:
         # firefox_profile.set_preference('permissions.default.stylesheet', 2) # CSS 로딩 Disable
         # firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false') # Flashplayer Disable
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        os.environ["MOZ_HEADLESS"] = '1'
+        # os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
         self.driver.get(url)
         time.sleep(5)
@@ -52,20 +45,25 @@ class Newegg_Crawler:
         return html
 
     def action_chaining(self, target):
-        time.sleep(7)
+        print('action chaining start')
         print(self.driver)
         try:
-            self.driver.execute_script('window.scrollTo(1,'+str(target.location['y']-300)+')')
+            WebDriverWait(self.driver, 15).until(lambda d: d.execute_script('return document.readyState') == 'complete')
+            self.driver.execute_script('window.scrollTo(1,'+str(target.location['y']-200)+')')
+        except TimeoutException as e:
+            print(e)
         except StaleElementReferenceException as e:
             print(e)
         except NoSuchElementException as e:
             print(e)
+
         action_chain = webdriver.ActionChains(self.driver)
         action_chain.move_to_element(target)
         action_chain.click(target)
         time.sleep(2)
         action_chain.perform()
         time.sleep(2)
+        print('action chaining end')
 
         return self.driver
 
@@ -94,7 +92,7 @@ class Newegg_Crawler:
 
         return spec_tab
 
-    def spec_crawler(self):
+    def spec_crawler(self, make_csv):
         html = self.driver.page_source
         html = BeautifulSoup(html, 'lxml')
         product_page = html.find('div', {'id': 'detailSpecContent'})
@@ -107,8 +105,9 @@ class Newegg_Crawler:
 
         # Product Spec Crawling End
 
-        make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
-        make_csv.create_csv()
+        if not self.pricecsv_exist:
+            make_csv.create_csv()
+            self.pricecsv_exist = True
         try:
             make_csv.save_csv(model_dict['Brand'], model_dict['Model'])
         except KeyError as e:
@@ -255,9 +254,8 @@ class Newegg_Crawler:
 
 def main():
     product_index = 0
+    make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
     crawler = Newegg_Crawler('https://www.newegg.com/LCD-LED-Monitors/SubCategory/ID-20')
-    session_id = crawler.driver.session_id
-    session_url = crawler.driver.command_executor._url
 
     titles = crawler.start_crawler()
     while(product_index < len(titles)):
@@ -268,16 +266,13 @@ def main():
         spec_tab = crawler.img_crawler()
         crawler.action_chaining(spec_tab)
 
-        review_tab, model_dict = crawler.spec_crawler()
+        review_tab, model_dict = crawler.spec_crawler(make_csv)
         crawler.action_chaining(review_tab)
         crawler.review_crawler(model_dict)
         crawler.driver.back()
         product_index += 1
 
     crawler.driver.quit()
-        #crawler.driver = webdriver.Remote(command_executor=session_url, desired_capabilities={})
-        #crawler.driver.session_id = session_id
 
-    crawler.driver.quit()
 if __name__ == "__main__":
     main()
