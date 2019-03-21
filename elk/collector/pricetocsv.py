@@ -48,8 +48,9 @@ class PriceToCSV:
 
         for item in searched_items:
             if item.link:
-                product_asin = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item.link).group('ASIN')
-                if product_asin:
+                searched_re = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item.link)
+                if searched_re:
+                    product_asin = searched_re.group('ASIN')
                     return product_asin
 
         raise NoItems
@@ -80,7 +81,6 @@ class PriceToCSV:
                 raise NoFile
             if args:
                 note = ' '.join(list(args))
-                print(note)
             else:
                 note = ''
             product_asin = self.get_asin((' '.join([brand, model, note])).strip())
@@ -91,12 +91,12 @@ class PriceToCSV:
             print('There are no items for the keyword or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-'''
+
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
-make_csv.save_csv('', '', 'HP Pavilion 15t Premium Touch Laptop (Intel 8th Gen i7-8550U quad core, 8GB RAM, 1TB HDD + 128GB Sata SSD, 15.6 FHD 1920 x 1080, GeForce MX150, Backlit Keyboard, Win 10 Home) Sapphire Blue')
-make_csv.save_csv('apple', 'iphoneX')
-'''
+make_csv.save_csv('', '', 'HP Laptop ProBook 450 G5 (2ST09UT#ABA) Intel Core i5 8th Gen 8250U (1.60 GHz) 8 GB Memory 256 GB SSD Intel UHD Graphics 620 15.6" Windows 10 Pro 64-Bit')
+make_csv.save_csv('HP', '450 G5 (2ST09UT#ABA)')
+
 '''
 변경점
 쓰기 전에 make_csv.create_csv 필요 (필요에 따라 파일 네임을 인자로 줄수있고, 기본값도있음)
