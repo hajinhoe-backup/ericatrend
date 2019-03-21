@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, url_for
 
 
 def create_app(test_config=None):
@@ -24,7 +24,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import main
+    from . import main, search
     app.register_blueprint(main.bp)
+    app.register_blueprint(search.bp)
 
     return app

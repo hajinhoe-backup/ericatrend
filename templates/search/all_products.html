@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    모든 제품
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="../../static/product_view.css">
+{% endblock %}
+
+{% block body %}
+    <div id = "contents">
+        <nav>
+            <a href="{{ url_for('main.main') }}">메인 화면</a>
+        </nav>
+        <header>
+            <h1>트랜드 검색 - 모든 제품</h1>
+            <div id = "search_box" class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </header>
+        <section>
+            <div>
+                <div class="card mb-12">
+                    <div class="row no-gutters">
+                        <div class="col-md-2">
+                            <img src="..." class="card-img" alt="...">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="card-body">
+                                <h5 class="card-title">맥북 에어</h5>
+                                <p class="card-text">얇은 최신 노트북</p>
+                                <p class="card-text"><small class="text-muted">3개월 전 출시</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

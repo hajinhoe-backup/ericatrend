@@ -94,6 +94,8 @@ class PriceToCSV:
 
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
+make_csv.save_csv('', '', 'HP Pavilion 15t Premium Touch Laptop (Intel 8th Gen i7-8550U quad core, 8GB RAM, 1TB HDD + 128GB Sata SSD, 15.6 FHD 1920 x 1080, GeForce MX150, Backlit Keyboard, Win 10 Home) Sapphire Blue')
+make_csv.save_csv('apple', 'iphoneX')
 make_csv.save_csv('', '', 'HP Laptop ProBook 450 G5 (2ST09UT#ABA) Intel Core i5 8th Gen 8250U (1.60 GHz) 8 GB Memory 256 GB SSD Intel UHD Graphics 620 15.6" Windows 10 Pro 64-Bit')
 make_csv.save_csv('HP', '450 G5 (2ST09UT#ABA)')
 

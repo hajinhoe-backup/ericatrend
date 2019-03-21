@@ -11,11 +11,16 @@
 {% block body %}
     <div id="main">
         <h1>에리카 트렌드</h1>
-        <div id = "search_box" class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+        <form action="{{ url_for('search.process') }}" method="get">
+            <div id = "search_box" class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
+                </div>
             </div>
+        </form>
+        <div>
+            <a href="{{ url_for('search.all_products') }}"><i class="far fa-list-alt"> 모든 제품 보기</i></a>
         </div>
     </div>
 {% endblock %}
