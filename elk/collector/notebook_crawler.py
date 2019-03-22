@@ -1,27 +1,29 @@
+# Built-in Lib
 import time
 import re
 import csv
-from urllib.request import urlopen
+import os
+
+# Third-party Lib
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-
+#Local Lib
 import pricetocsv
+
 
 class Newegg_Crawler:
 
     def __init__(self, url):
         firefox_profile = webdriver.FirefoxProfile()
-        # firefox_profile.set_preference('permissions.default.image', 2) # 이미지 로딩 Disable
-        # firefox_profile.set_preference('permissions.default.stylesheet', 2) # CSS 로딩 Disable
-        # firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false') # Flashplayer Disable
+        firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
         # os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
@@ -31,23 +33,14 @@ class Newegg_Crawler:
         self.reviewcsv_exist = False
         self.driver.refresh()
 
-    def url_connect(self, url):
-        html = urlopen(url)
-        soup = BeautifulSoup(html, "lxml")
-
-        return soup
-
     def driver_beautifulfy(self):
-        
         html = self.driver.page_source
         html = BeautifulSoup(html, 'lxml')
 
         return html
 
     def action_chaining(self, target):
-        print('action chaining start')
-        print(self.driver)
-        try:
+        try: # document가 로딩될 때 까지 최대 15초 기다린다.
             WebDriverWait(self.driver, 15).until(lambda d: d.execute_script('return document.readyState') == 'complete')
             self.driver.execute_script('window.scrollTo(1,'+str(target.location['y']-200)+')')
         except TimeoutException as e:
@@ -57,28 +50,37 @@ class Newegg_Crawler:
         except NoSuchElementException as e:
             print(e)
 
-        action_chain = webdriver.ActionChains(self.driver)
-        action_chain.move_to_element(target)
-        action_chain.click(target)
-        time.sleep(2)
-        action_chain.perform()
-        time.sleep(2)
-        print('action chaining end')
+        try: # 타겟으로 이동해서 클릭, viewport에 해당 target이 보이지 않으면 다시한 번 시도
+            action_chain = webdriver.ActionChains(self.driver)
+            action_chain.move_to_element(target)
+            action_chain.click(target)
+            time.sleep(3)
+            action_chain.perform()
+        except MoveTargetOutOfBoundsException as e:
+            print(e)
+            time.sleep(3)
+            self.driver.execute_script('window.scrollTo(1,' + str(target.location['y'] - 200) + ')')
+            action_chain.perform()
 
         return self.driver
 
-    def start_crawler(self):
-        target_dict = {}
+    def list_crawler(self):
         titles = self.driver.find_elements_by_xpath("//a[@title='View Details']")
 
         return titles
 
     def img_crawler(self):
-        time.sleep(5)
-        product_img_id = self.driver.find_element_by_class_name('mainSlide').find_element_by_tag_name('img').get_attribute('id')
+        try:
+            WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'mainSlide')))
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'Details_Tab')))
+        except NoSuchElementException as e:
+            print(e)
+        except TimeoutException as e:
+            print(e)
 
         html = self.driver.page_source
         product_page = BeautifulSoup(html, 'lxml')
+        product_img_id = product_page.find('span', {'class': 'mainSlide'}).find('img')['id']
         product_img = product_page.find('img', {'id': product_img_id})
 
         product_id = product_img_id[10:]
@@ -103,15 +105,18 @@ class Newegg_Crawler:
         for data in model_html:
             model_dict[data.contents[0].string] = data.contents[1].string
 
-        # Product Spec Crawling End
-
         if not self.pricecsv_exist:
             make_csv.create_csv()
             self.pricecsv_exist = True
+
+        # Product Spec Crawling End
+
         try:
             make_csv.save_csv(model_dict['Brand'], model_dict['Model'])
-        except KeyError as e:
-            make_csv.save_csv('', '', product_title.get_text())
+        except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
+            make_csv.save_csv('', '', product_title.get_text(strip=True))
+            model_dict['Brand'] = ''
+            model_dict['Model'] = ''
 
         review_tab = self.driver.find_element_by_id('Community_Tab')
 
@@ -127,22 +132,30 @@ class Newegg_Crawler:
         else:
             f = open("review_info.csv", "a", encoding="utf-8", newline="")
             wr = csv.writer(f)
-        
+        total_review = 0
         while(True):
+            try:
+                WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'rn-boxContent')))
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'reviewPageSize')))
+            except TimeoutException:
+                print('There is no Reivew, Or failed to load reviews')
+                break
+            except NoSuchElementException:
+                print('There is no Reivew, Or failed to load reviews')
+                break
+            time.sleep(1)
             html = self.driver.page_source
             selectedItem = BeautifulSoup(html, "lxml")
             reviews = selectedItem.findAll("div", {"itemprop" : "review"})
-            #print("==========",reviews)
+            total_review += len(reviews)
             for review in reviews:
-                #print(review.parent('div')[1])
                 voted = review.find('div', {'class': 'comments-helpful'}).find('span').text
-                parsing_voted = re.findall('[0-9]* out of [0-9]*', voted)
+                parsing_voted = re.findall('[0-9]* out of [0-9]*', voted) # helpful review가 있는 태그 내용을 정규식으로 추출
                 if len(parsing_voted) != 0:
                     parsing_voted = re.findall('[0-9]*', parsing_voted[0])
-                    print(parsing_voted)
 
-                    voted_Y = parsing_voted[0]
-                    voted_N = str(int(parsing_voted[-2]) - int(voted_Y))
+                    voted_Y = parsing_voted[0] # 긍정 투표
+                    voted_N = str(int(parsing_voted[-2]) - int(voted_Y)) # 부정 투표
                 else:
                     voted_Y = 0
                     voted_N = 0
@@ -242,24 +255,24 @@ class Newegg_Crawler:
                     else:
                         print("mfr's comment DETECTED!!!")
             self.driver.execute_script("Biz.ProductReview2017.Pagination.nextbuttonClick()") # 다음 리뷰페이지로 넘김
+            self.driver.find_element_by_id('reviewPageSize')
             btn = selectedItem.find_all("button", {"onclick": "Biz.ProductReview2017.Pagination.nextbuttonClick()"})
             print("Next Page...")
-            if (len(btn) == 0): # 다음 버튼이 아예 존재하지 않거나
+            if (len(btn) == 0 or (btn[0].get("disabled") == "")): # 다음 버튼이 아예 존재하지 않거나
+                time.sleep(1)
+                print('review crawling Done.')
+                f.close()
                 break
-            elif (btn[0].get("disabled") == ""): # disabled 속성이면 루프 중단
-                break
-
-
-
+        print('%s reviews are added.' % (total_review))
 
 def main():
     product_index = 0
     make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
-    crawler = Newegg_Crawler('https://www.newegg.com/LCD-LED-Monitors/SubCategory/ID-20')
+    crawler = Newegg_Crawler('https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740')
 
-    titles = crawler.start_crawler()
+    titles = crawler.list_crawler()
     while(product_index < len(titles)):
-        titles = crawler.start_crawler()
+        titles = crawler.list_crawler()
 
         crawler.action_chaining(titles[product_index])
 
