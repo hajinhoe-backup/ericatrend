@@ -21,16 +21,18 @@ import pricetocsv
 
 class Newegg_Crawler:
 
-    def __init__(self, url):
+    def __init__(self):
         firefox_profile = webdriver.FirefoxProfile()
         firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
         # os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
-        self.driver.get(url)
-        time.sleep(5)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
+
+    def feed_url(self, url):
+        self.driver.get(url)
+        time.sleep(5)
         self.driver.refresh()
 
     def driver_beautifulfy(self):
@@ -266,24 +268,27 @@ class Newegg_Crawler:
         print('%s reviews are added.' % (total_review))
 
 def main():
-    product_index = 0
-    make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
-    crawler = Newegg_Crawler('https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740')
+    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=RELEASE&Page='
+    crawler = Newegg_Crawler()
+    for page_number in range(1, 101):
+        product_index = 0
+        make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
+        crawler.feed_url(page_url + page_number)
 
-    titles = crawler.list_crawler()
-    while(product_index < len(titles)):
         titles = crawler.list_crawler()
+        while(product_index < len(titles)):
+            titles = crawler.list_crawler()
 
-        crawler.action_chaining(titles[product_index])
+            crawler.action_chaining(titles[product_index])
 
-        spec_tab = crawler.img_crawler()
-        crawler.action_chaining(spec_tab)
+            spec_tab = crawler.img_crawler()
+            crawler.action_chaining(spec_tab)
 
-        review_tab, model_dict = crawler.spec_crawler(make_csv)
-        crawler.action_chaining(review_tab)
-        crawler.review_crawler(model_dict)
-        crawler.driver.back()
-        product_index += 1
+            review_tab, model_dict = crawler.spec_crawler(make_csv)
+            crawler.action_chaining(review_tab)
+            crawler.review_crawler(model_dict)
+            crawler.driver.back()
+            product_index += 1
 
     crawler.driver.quit()
 
