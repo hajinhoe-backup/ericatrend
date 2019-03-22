@@ -6,7 +6,6 @@ Click==7.0
 fake-useragent==0.1.11
 Flask==1.0.2
 future==0.17.1
-Google-Search-API==1.1.14
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
