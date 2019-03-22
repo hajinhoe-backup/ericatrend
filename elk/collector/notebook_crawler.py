@@ -273,7 +273,7 @@ def main():
     for page_number in range(1, 101):
         product_index = 0
         make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
-        crawler.feed_url(page_url + page_number)
+        crawler.feed_url(page_url + str(page_number))
 
         titles = crawler.list_crawler()
         while(product_index < len(titles)):
