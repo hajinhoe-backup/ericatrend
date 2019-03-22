@@ -20,3 +20,8 @@ Font Awesome v5.7.2 (CDN:한국서버 있음)
 1. 아마존 리뷰 수집 크롤러 자동화 및 모듈화
 ## 프론트엔드 개발
 1. 프론트 엔드 예시 페이지 개발
+
+
+## 웹서버
+export FLASK_APP=__init__.py #최초 1회만
+flask run --host=0.0.0.0
