@@ -30,7 +30,10 @@ class NoFile(Exception):
     pass
 
 
-class NoItems(Exception):
+class NoKeepaData(Exception):
+    pass
+
+class NoASIN(Exception):
     pass
 
 
@@ -53,7 +56,7 @@ class PriceToCSV:
                     product_asin = searched_re.group('ASIN')
                     return product_asin
 
-        raise NoItems
+        raise NoASIN
 
     def create_csv(self, file_name=None):
         if file_name:
@@ -72,6 +75,8 @@ class PriceToCSV:
     def get_prices(self, product_asin):
         products = self.keepa_api.query(product_asin)
         product = products[0]
+        if 'NEW' not in product['data']:
+            raise NoKeepaData
         price_zip_list = list(zip(product['data']['NEW_time'], product['data']['NEW']))
         return price_zip_list
 
@@ -87,10 +92,22 @@ class PriceToCSV:
             price_zip_list = self.get_prices(product_asin)
             self.write_csv(brand, model, note, product_asin, price_zip_list)
             print('Done!')
-        except NoItems:
-            print('There are no items for the keyword or Search server seems having some problems.')
+        except NoASIN:
+            print('There are no ASIN for the keyword or Search server seems having some problems.')
+        except NoKeepaData:
+            print('There are no data in keepa for the ASIN or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
+
+
+make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
+make_csv.create_csv()
+
+
+make_csv.save_csv('', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
+make_csv.create_csv('amazon')
+make_csv.save_csv('apple', 'iphoneX')
+
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
