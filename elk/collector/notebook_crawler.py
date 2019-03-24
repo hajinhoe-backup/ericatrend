@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
@@ -23,17 +24,17 @@ class Newegg_Crawler:
 
     def __init__(self):
         firefox_profile = webdriver.FirefoxProfile()
-        firefox_profile.set_preference("intl.accept_languages", 'en,en-US')
+        # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        # os.environ["MOZ_HEADLESS"] = '1'
-        self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
+        #os.environ["MOZ_HEADLESS"] = '1'
+        self.driver = webdriver.Firefox(executable_path=".\geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
 
     def feed_url(self, url):
         self.driver.get(url)
-        time.sleep(5)
-        self.driver.refresh()
+        #time.sleep(5)
+        #self.driver.refresh()
 
     def driver_beautifulfy(self):
         html = self.driver.page_source
@@ -60,9 +61,11 @@ class Newegg_Crawler:
             action_chain.perform()
         except MoveTargetOutOfBoundsException as e:
             print(e)
-            time.sleep(3)
+            time.sleep(5)
             self.driver.execute_script('window.scrollTo(1,' + str(target.location['y'] - 200) + ')')
             action_chain.perform()
+        except WebDriverException as e:
+            pass
 
         return self.driver
 
@@ -90,13 +93,16 @@ class Newegg_Crawler:
             product_id = product_img_id[11:]
 
         product_imgsrc = product_img['src']
+        try:
+            spec_tab = self.driver.find_element_by_id('Details_Tab')
+        except WebDriverException as e:
+            pass
 
-        spec_tab = self.driver.find_element_by_id('Details_Tab')
         print('poductID : %s\nproductImgSource : %s' % (product_id, product_imgsrc))
 
         return spec_tab
 
-    def spec_crawler(self, make_csv):
+    def spec_crawler(self, make_csv, page_number):
         html = self.driver.page_source
         html = BeautifulSoup(html, 'lxml')
         product_page = html.find('div', {'id': 'detailSpecContent'})
@@ -108,7 +114,7 @@ class Newegg_Crawler:
             model_dict[data.contents[0].string] = data.contents[1].string
 
         if not self.pricecsv_exist:
-            make_csv.create_csv()
+            make_csv.create_csv(page_number)
             self.pricecsv_exist = True
 
         # Product Spec Crawling End
@@ -116,6 +122,7 @@ class Newegg_Crawler:
         try:
             make_csv.save_csv(model_dict['Brand'], model_dict['Model'])
         except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
+            print(product_title.get_text(strip=True),"을 아마존에서 검색합니다.")
             make_csv.save_csv('', '', product_title.get_text(strip=True))
             model_dict['Brand'] = ''
             model_dict['Model'] = ''
@@ -124,15 +131,15 @@ class Newegg_Crawler:
 
         return review_tab, model_dict
 
-    def review_crawler(self, model_dict):
+    def review_crawler(self, model_dict, page_number):
         try:
-            f = open("review_info.csv", "r")
+            f = open("review_info_"+str(page_number)+".csv", "r")
         except FileNotFoundError :
-            f = open("review_info.csv", "a", encoding="utf-8", newline="")
+            f = open("review_info_"+str(page_number)+".csv", "a", encoding="utf-8", newline="")
             wr = csv.writer(f)
             wr.writerow(["Brand","Model","Star","Title","Date","Pros","Cons","Other","Voted_Y","Voted_N"])
         else:
-            f = open("review_info.csv", "a", encoding="utf-8", newline="")
+            f = open("review_info_"+str(page_number)+".csv", "a", encoding="utf-8", newline="")
             wr = csv.writer(f)
         total_review = 0
         while(True):
@@ -268,11 +275,9 @@ class Newegg_Crawler:
         print('%s reviews are added.' % (total_review))
 
 def main():
-    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=RELEASE&Page='
+    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=REVIEWS&Page='
     crawler = Newegg_Crawler()
-
-
-    for page_number in range(1, 101):
+    for page_number in range(16, 101):
         product_index = 0
         make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
         crawler.feed_url(page_url + str(page_number))
@@ -286,9 +291,10 @@ def main():
             spec_tab = crawler.img_crawler()
             crawler.action_chaining(spec_tab)
 
-            review_tab, model_dict = crawler.spec_crawler(make_csv)
+            review_tab, model_dict = crawler.spec_crawler(make_csv, page_number)
             crawler.action_chaining(review_tab)
-            crawler.review_crawler(model_dict)
+            crawler.review_crawler(model_dict, page_number)
+            time.sleep(3)
             crawler.driver.back()
             product_index += 1
 
