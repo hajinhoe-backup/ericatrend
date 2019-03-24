@@ -63,14 +63,20 @@ class PriceToCSV:
             self.saved_file_name = file_name
         with open('{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(['brand', 'model', 'note', 'asin', 'date', 'price'])
+            csv_writer.writerow(['id', 'date', 'price'])
+        with open('{0}_idtoasin.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow(['id', 'asin'])
         self.is_file_created = True
 
-    def write_csv(self, brand, model, note, product_asin, price_zip_list):
+    def write_csv(self, id, product_asin, price_zip_list):
         with open('{0}.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             for row in price_zip_list:
-                csv_writer.writerow([brand, model, note, product_asin] + list(row))
+                csv_writer.writerow([id] + list(row))
+        with open('{0}_idtoasin.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow([id, product_asin])
 
     def get_prices(self, product_asin):
         products = self.keepa_api.query(product_asin)
@@ -80,7 +86,7 @@ class PriceToCSV:
         price_zip_list = list(zip(product['data']['NEW_time'], product['data']['NEW']))
         return price_zip_list
 
-    def save_csv(self, brand, model, *args):
+    def save_csv(self, id, brand, model,  *args):
         try:
             if not self.is_file_created:
                 raise NoFile
@@ -90,7 +96,7 @@ class PriceToCSV:
                 note = ''
             product_asin = self.get_asin((' '.join([brand, model, note])).strip())
             price_zip_list = self.get_prices(product_asin)
-            self.write_csv(brand, model, note, product_asin, price_zip_list)
+            self.write_csv(id, product_asin, price_zip_list)
             print('Done!')
         except NoASIN:
             print('There are no ASIN for the keyword or Search server seems having some problems.')
@@ -104,9 +110,9 @@ make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g4
 make_csv.create_csv()
 
 
-make_csv.save_csv('', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
+make_csv.save_csv('A23213D', '', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
 make_csv.create_csv('amazon')
-make_csv.save_csv('apple', 'iphoneX')
+make_csv.save_csv('D34124', 'apple', 'iphoneX')
 
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
