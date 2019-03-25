@@ -61,20 +61,20 @@ class PriceToCSV:
     def create_csv(self, file_name=None):
         if file_name:
             self.saved_file_name = file_name
-        with open('{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
+        with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(['id', 'date', 'price'])
-        with open('{0}_idtoasin.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
+        with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow(['id', 'asin'])
         self.is_file_created = True
 
     def write_csv(self, id, product_asin, price_zip_list):
-        with open('{0}.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
+        with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             for row in price_zip_list:
                 csv_writer.writerow([id] + list(row))
-        with open('{0}_idtoasin.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
+        with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writerow([id, product_asin])
 
@@ -86,7 +86,7 @@ class PriceToCSV:
         price_zip_list = list(zip(product['data']['NEW_time'], product['data']['NEW']))
         return price_zip_list
 
-    def save_csv(self, id, brand, model,  *args):
+    def save_csv(self, id, brand, model, *args):
         try:
             if not self.is_file_created:
                 raise NoFile
@@ -105,7 +105,7 @@ class PriceToCSV:
         except NoFile:
             print('please, make file first.')
 
-
+'''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
 
@@ -113,7 +113,7 @@ make_csv.create_csv()
 make_csv.save_csv('A23213D', '', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
 make_csv.create_csv('amazon')
 make_csv.save_csv('D34124', 'apple', 'iphoneX')
-
+'''
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()

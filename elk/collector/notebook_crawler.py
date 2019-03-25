@@ -15,7 +15,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
-
+from urllib.request import urlretrieve
 #Local Lib
 import pricetocsv
 
@@ -26,7 +26,7 @@ class Newegg_Crawler:
         firefox_profile = webdriver.FirefoxProfile()
         # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        #os.environ["MOZ_HEADLESS"] = '1'
+        os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path=".\geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
@@ -100,9 +100,9 @@ class Newegg_Crawler:
 
         print('poductID : %s\nproductImgSource : %s' % (product_id, product_imgsrc))
 
-        return spec_tab
+        return spec_tab, product_id, product_imgsrc
 
-    def spec_crawler(self, make_csv, page_number):
+    def spec_crawler(self, make_csv, product_id, page_number):
         html = self.driver.page_source
         html = BeautifulSoup(html, 'lxml')
         product_page = html.find('div', {'id': 'detailSpecContent'})
@@ -120,7 +120,7 @@ class Newegg_Crawler:
         # Product Spec Crawling End
 
         try:
-            make_csv.save_csv(model_dict['Brand'], model_dict['Model'])
+            make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
         except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
             print(product_title.get_text(strip=True),"을 아마존에서 검색합니다.")
             make_csv.save_csv('', '', product_title.get_text(strip=True))
@@ -131,17 +131,41 @@ class Newegg_Crawler:
 
         return review_tab, model_dict
 
-    def review_crawler(self, model_dict, page_number):
+    def review_crawler(self, model_dict, product_imgsrc ,product_id, page_number):
         try:
-            f = open("review_info_"+str(page_number)+".csv", "r")
+            ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "r")
+            pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "r")
         except FileNotFoundError :
-            f = open("review_info_"+str(page_number)+".csv", "a", encoding="utf-8", newline="")
-            wr = csv.writer(f)
-            wr.writerow(["Brand","Model","Star","Title","Date","Pros","Cons","Other","Voted_Y","Voted_N"])
+            ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
+            pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
+
+            wr = csv.writer(pi)
+            wr.writerow(["id", "Brand", "Model"])
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]])
+
+            wr = csv.writer(ri)
+            wr.writerow(["id","Star","Title","Date","Pros","Cons","Other","Voted_Y","Voted_N"])
         else:
-            f = open("review_info_"+str(page_number)+".csv", "a", encoding="utf-8", newline="")
-            wr = csv.writer(f)
+            ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
+            pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
+            wr = csv.writer(pi)
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]])
+            wr = csv.writer(ri)
+
         total_review = 0
+
+        print('IMG Downloading...')
+        print('https:'+product_imgsrc)
+        try:
+            if not os.path.exists(os.path.join('data/img/{0}'.format(str(page_number)))):
+                os.makedirs(os.path.join('data/img/{0}'.format(str(page_number))))
+                urlretrieve('https:'+product_imgsrc,'data/img/{0}/{1}.png'.format(str(page_number),product_id))
+
+            else:
+                urlretrieve('https:'+product_imgsrc,'data/img/{0}/{1}.png'.format(str(page_number),product_id))
+        except OSError:
+            urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
+
         while(True):
             try:
                 WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'rn-boxContent')))
@@ -152,11 +176,13 @@ class Newegg_Crawler:
             except NoSuchElementException:
                 print('There is no Reivew, Or failed to load reviews')
                 break
+
             time.sleep(1)
             html = self.driver.page_source
             selectedItem = BeautifulSoup(html, "lxml")
             reviews = selectedItem.findAll("div", {"itemprop" : "review"})
             total_review += len(reviews)
+
             for review in reviews:
                 voted = review.find('div', {'class': 'comments-helpful'}).find('span').text
                 parsing_voted = re.findall('[0-9]* out of [0-9]*', voted) # helpful review가 있는 태그 내용을 정규식으로 추출
@@ -182,8 +208,7 @@ class Newegg_Crawler:
 
                 if reviewBodyForm == 3:
                     if existTitle:
-                        wr.writerow([model_dict["Brand"], \
-                                model_dict["Model"], \
+                        wr.writerow([product_id, \
                                 review.find("span", {"itemprop" : "ratingValue"}).text, \
                                 review.find("span", {"class" : "comments-title-content"}).text, \
                                 review.find("span", {"class" : "comments-time-right"})['content'], \
@@ -193,8 +218,7 @@ class Newegg_Crawler:
                                 voted_Y, \
                                 voted_N])
                     else:
-                        wr.writerow([model_dict["Brand"], \
-                                     model_dict["Model"], \
+                        wr.writerow([product_id, \
                                      review.find("span", {"itemprop": "ratingValue"}).text, \
                                      None, \
                                      review.find("span", {"class": "comments-time-right"})['content'], \
@@ -205,8 +229,7 @@ class Newegg_Crawler:
                                      voted_N])
                 elif reviewBodyForm == 2:
                     if existTitle:
-                        wr.writerow([model_dict["Brand"], \
-                                model_dict["Model"], \
+                        wr.writerow([product_id, \
                                 review.find("span", {"itemprop" : "ratingValue"}).text, \
                                 review.find("span", {"class" : "comments-title-content"}).text, \
                                 review.find("span", {"class" : "comments-time-right"})['content'], \
@@ -216,8 +239,7 @@ class Newegg_Crawler:
                                 voted_Y, \
                                 voted_N])
                     else:
-                        wr.writerow([model_dict["Brand"], \
-                                model_dict["Model"], \
+                        wr.writerow([product_id, \
                                 review.find("span", {"itemprop": "ratingValue"}).text, \
                                 None, \
                                 review.find("span", {"class": "comments-time-right"})['content'], \
@@ -228,8 +250,7 @@ class Newegg_Crawler:
                                 voted_N])
                 elif reviewBodyForm == 1:
                     if existTitle:
-                        wr.writerow([model_dict["Brand"], \
-                                 model_dict["Model"], \
+                        wr.writerow([product_id, \
                                  review.find("span", {"itemprop": "ratingValue"}).text, \
                                  review.find("span", {"class": "comments-title-content"}).text, \
                                  review.find("span", {"class": "comments-time-right"})['content'], \
@@ -239,8 +260,7 @@ class Newegg_Crawler:
                                  voted_Y, \
                                  voted_N])
                     else:
-                        wr.writerow([model_dict["Brand"], \
-                                 model_dict["Model"], \
+                        wr.writerow([product_id, \
                                  review.find("span", {"itemprop": "ratingValue"}).text, \
                                  None, \
                                  review.find("span", {"class": "comments-time-right"})['content'], \
@@ -251,8 +271,7 @@ class Newegg_Crawler:
                                  voted_N])
                 else: # 0 , -1
                     if existTitle:
-                        wr.writerow([model_dict["Brand"], \
-                                 model_dict["Model"], \
+                        wr.writerow([product_id, \
                                  review.find("span", {"itemprop": "ratingValue"}).text, \
                                  review.find("span", {"class": "comments-title-content"}).text, \
                                  review.find("span", {"class": "comments-time-right"})['content'], \
@@ -263,6 +282,7 @@ class Newegg_Crawler:
                                  voted_N])
                     else:
                         print("mfr's comment DETECTED!!!")
+
             self.driver.execute_script("Biz.ProductReview2017.Pagination.nextbuttonClick()") # 다음 리뷰페이지로 넘김
             self.driver.find_element_by_id('reviewPageSize')
             btn = selectedItem.find_all("button", {"onclick": "Biz.ProductReview2017.Pagination.nextbuttonClick()"})
@@ -270,14 +290,15 @@ class Newegg_Crawler:
             if (len(btn) == 0 or (btn[0].get("disabled") == "")): # 다음 버튼이 아예 존재하지 않거나
                 time.sleep(1)
                 print('review crawling Done.')
-                f.close()
+                ri.close()
                 break
+            pi.close()
         print('%s reviews are added.' % (total_review))
 
 def main():
     page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=REVIEWS&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(16, 101):
+    for page_number in range(2, 101):
         product_index = 0
         make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
         crawler.feed_url(page_url + str(page_number))
@@ -288,16 +309,16 @@ def main():
 
             crawler.action_chaining(titles[product_index])
 
-            spec_tab = crawler.img_crawler()
+            spec_tab, product_id, product_imgsrc = crawler.img_crawler()
             crawler.action_chaining(spec_tab)
 
-            review_tab, model_dict = crawler.spec_crawler(make_csv, page_number)
+            review_tab, model_dict = crawler.spec_crawler(make_csv, product_id, page_number)
             crawler.action_chaining(review_tab)
-            crawler.review_crawler(model_dict, page_number)
+            crawler.review_crawler(model_dict, product_imgsrc, product_id, page_number)
             time.sleep(3)
             crawler.driver.back()
             product_index += 1
-
+        crawler.pricecsv_exist = False
     crawler.driver.quit()
 
 if __name__ == "__main__":
