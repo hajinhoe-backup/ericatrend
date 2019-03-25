@@ -3,8 +3,8 @@ CREATE DATABASE notebook_db;
 USE notebook_db;
 
 CREATE TABLE review (
-  id INTEGER,
-  newegg_id CHAR(14) AUTO_INCREMENT,
+  id INTEGER AUTO_INCREMENT,
+  newegg_id CHAR(14),
   data DATETIME,
   title TEXT,
   pros TEXT,
