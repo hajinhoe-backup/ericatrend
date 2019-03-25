@@ -10,7 +10,7 @@
 
 {% block body %}
     <div id="main">
-        <h1>에리카 트렌드</h1>
+        <h1>ERICA Trend</h1>
         <form action="{{ url_for('search.process') }}" method="get">
             <div id = "search_box" class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
@@ -19,8 +19,9 @@
                 </div>
             </div>
         </form>
-        <div>
+        <div id="tool_box">
             <a href="{{ url_for('search.all_products') }}"><i class="far fa-list-alt"> 모든 제품 보기</i></a>
+            <a href="{{ url_for('search.product_detail') }}"><i class="far fa-list-alt"> 상세보기 시연</i></a>
         </div>
     </div>
 {% endblock %}

@@ -10,7 +10,7 @@ def process():
 
 @bp.route('/detail', methods=('get', 'post'))
 def product_detail():
-    return '검색 결과 페이지'
+    return render_template('search/product_detail.html')
 
 @bp.route('/list', methods=('get', 'post'))
 def products():

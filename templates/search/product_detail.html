@@ -6,7 +6,61 @@
 
 {% block head %}
     <link rel="stylesheet" href="../../static/product_view.css">
+    <link rel="stylesheet" href="../../static/product_detail.css">
 {% endblock %}
 
 {% block body %}
+    <div id = "contents">
+        <nav>
+            <a href="{{ url_for('main.main') }}">메인 화면</a>
+        </nav>
+        <header>
+            <h1>트랜드 검색 : 맥북 에어 13 2015</h1>
+            <div id = "search_box" class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </header>
+        <section>
+            <div class="alert alert-primary" role="alert">
+                          <span>이런 검색어는 어떠세요?</span>
+                        <span>그램</span>
+                        <span>스펙타</span>
+                        <span>xps</span>
+                        <span>미북</span>
+            </div>
+        </section>
+        <section>
+            <h2>별점 그래프</h2>
+            <p>파이썬으로 그려야함</p>
+        </section>
+        <section id="helpful_review">
+            <h2>리뷰</h2>
+            <div>
+                {% for i in range(5) %}
+                <div class="card mb-12">
+                    <div class="row no-gutters">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h5 class="card-title">얇지만 무거운 노트북<span class="product_star"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></span></h5>
+                                <p class="card-text">최근에는 너무 무거운 것 같다.</p>
+                                <p class="card-text good_review"><i class="far fa-thumbs-up"></i> 5명 중 3명이 추천한 리뷰</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        <section>
+            <h2>워드 클라우드</h2>
+            <p>키바나에서 빼옴</p>
+        </section>
+        <section>
+            <h2>가격 동향</h2>
+            <p>키바나에서 빼옴</p>
+        </section>
+    </div>
 {% endblock %}
