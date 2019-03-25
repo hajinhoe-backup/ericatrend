@@ -115,7 +115,7 @@ class Newegg_Crawler:
         try:
             make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
         except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
-            print(product_title.get_text(strip=True),"을 아마존에서 검색합니다.")
+            print(product_title.get_text(strip=True)," item is now searching.")
             make_csv.save_csv('', '', product_title.get_text(strip=True))
             model_dict['Brand'] = ''
             model_dict['Model'] = ''
