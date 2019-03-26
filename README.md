@@ -25,3 +25,10 @@ Font Awesome v5.7.2 (CDN:한국서버 있음)
 ## 웹서버
 export FLASK_APP=__init__.py #최초 1회만
 flask run --host=0.0.0.0
+
+##price to info 사용 전에
+유료 과금되는 개인키를 포함하고 있으므로 키가 밖으로 빠졌습니다.
+
+동일한 폴더의 access_keys.eg.json을
+복사해서 access_keys.json이라는 파일을 만들고 키를 넣으세요.
+키는 업로드 금지
