@@ -26,10 +26,11 @@ class Newegg_Crawler:
         firefox_profile = webdriver.FirefoxProfile()
         # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        os.environ["MOZ_HEADLESS"] = '1'
+        # os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path=".\geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
+        self.worse_case = False
 
     def feed_url(self, url):
         self.driver.get(url)
@@ -95,8 +96,13 @@ class Newegg_Crawler:
         product_imgsrc = product_img['src']
         try:
             spec_tab = self.driver.find_element_by_id('Details_Tab')
+            print(spec_tab.get_attribute('style'))
+            if not spec_tab.is_displayed():
+                print('There is no product detail.. skip.')
+                self.worse_case = True
         except WebDriverException as e:
-            pass
+            print(e,') There is no product detail.. skip.')
+            self.worse_case = True
 
         print('poductID : %s\nproductImgSource : %s' % (product_id, product_imgsrc))
 
@@ -119,11 +125,17 @@ class Newegg_Crawler:
 
         # Product Spec Crawling End
 
+
+
         try:
             make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
         except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
-            print(product_title.get_text(strip=True),"을 아마존에서 검색합니다.")
-            make_csv.save_csv('', '', product_title.get_text(strip=True))
+
+            if 'Brand' in model_dict.keys() and 'Part Number' in model_dict.keys():
+                model_dict['Model'] = model_dict['Part Number']
+
+            print(product_title.get_text(strip=True),"을 구글에서 검색합니다.")
+            make_csv.save_csv(product_id,'', '', product_title.get_text(strip=True))
             model_dict['Brand'] = ''
             model_dict['Model'] = ''
 
@@ -298,24 +310,36 @@ class Newegg_Crawler:
 def main():
     page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=REVIEWS&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(2, 101):
+    for page_number in range(19, 101):
         product_index = 0
         make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
         crawler.feed_url(page_url + str(page_number))
 
         titles = crawler.list_crawler()
         while(product_index < len(titles)):
+            if len(titles) == 0 :
+                print('Product list page is not loaded.')
+                print('Retry go to back.')
+                time.sleep(2)
+                crawler.driver.back()
             titles = crawler.list_crawler()
+            print(crawler.worse_case,' | ',product_index,'/',len(titles))
 
             crawler.action_chaining(titles[product_index])
 
             spec_tab, product_id, product_imgsrc = crawler.img_crawler()
             crawler.action_chaining(spec_tab)
+            if crawler.worse_case: # 제품 상세정보가 부족한 경우 제품 스킵
+                product_index += 1
+                crawler.worse_case = False
+                time.sleep(5)
+                crawler.driver.back()
+                continue
 
             review_tab, model_dict = crawler.spec_crawler(make_csv, product_id, page_number)
             crawler.action_chaining(review_tab)
             crawler.review_crawler(model_dict, product_imgsrc, product_id, page_number)
-            time.sleep(3)
+            time.sleep(5)
             crawler.driver.back()
             product_index += 1
         crawler.pricecsv_exist = False
