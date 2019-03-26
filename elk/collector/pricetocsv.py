@@ -1,8 +1,7 @@
 import keepa
-import time
 import csv
 import re
-from google import google
+import http.client, urllib.parse, json
 
 '''
 딱히 기존 코드 부분은 변경하지 않고, model , brand가 없을 때만 
@@ -38,21 +37,50 @@ class NoASIN(Exception):
     pass
 
 
+class BingSearch:
+    def __init__(self):
+        with open('access_keys.json') as file:
+            data = json.load(file)
+            self.key = data['bing_search_key']
+
+        self.host = "api.cognitive.microsoft.com"
+        self.path = "/bing/v7.0/search"
+
+    def search(self, string):
+        headers = {'Ocp-Apim-Subscription-Key': self.key}
+        conn = http.client.HTTPSConnection(self.host)
+        query = urllib.parse.quote(string)
+        conn.request("GET", self.path + "?q=" + query, headers=headers)
+        response = conn.getresponse()
+        result = json.loads(response.read().decode("utf8"))
+        if 'webPages' in result.keys() and 'value' in result['webPages'].keys():
+            result = result['webPages']['value']
+            return result
+        else:
+            return None
+
+
 class PriceToCSV:
-    def __init__(self, keepa_accesskey):
-        self.keepa_accesskey = keepa_accesskey
+    def __init__(self):
+        with open('access_keys.json') as file:
+            data = json.load(file)
+            keepa_accesskey = data['keepa_key']
+
         self.keepa_api = keepa.Keepa(keepa_accesskey)
         self.saved_file_name = 'price_info'
         self.is_file_created = False
+        self.bing_search = BingSearch()
 
     def get_asin(self, product_name):
-        # 구글을 통해 아마존 검색 후, asin을 구할 수 있으면 넘겨 주고,
-        # 그렇지 않은 경우 다음 검색결과에서 asin을 찾아보고 넘겨준다. 최대 5번 시도.
-        searched_items = google.search('site:www.amazon.com ' + product_name, 1)
+        # bing을 통해 아마존을 검색한다. None을 받을 경우 1회 재시도 한다.
+        searched_items = self.bing_search.search('site:www.amazon.com ' + product_name)
+
+        if not searched_items:
+            searched_items = self.bing_search.search('site:www.amazon.com ' + product_name)
 
         for item in searched_items:
-            if item.link:
-                searched_re = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item.link)
+            if item['url']:
+                searched_re = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item['url'])
                 if searched_re:
                     product_asin = searched_re.group('ASIN')
                     return product_asin
@@ -98,16 +126,15 @@ class PriceToCSV:
             product_asin = self.get_asin((' '.join([brand, model, note])).strip())
             price_zip_list = self.get_prices(product_asin)
             self.write_csv(id, product_asin, price_zip_list)
-            print('Done!')
+            print(product_asin, 'Done!')
         except NoASIN:
             print('There are no ASIN for the keyword or Search server seems having some problems.')
         except NoKeepaData:
             print('There are no data in keepa for the ASIN or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-
 '''
-make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
+make_csv = PriceToCSV()
 make_csv.create_csv()
 
 
