@@ -17,6 +17,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from urllib.request import urlretrieve
 from urllib.error import HTTPError
+
 #Local Lib
 import pricetocsv
 
@@ -27,7 +28,7 @@ class Newegg_Crawler:
         firefox_profile = webdriver.FirefoxProfile()
         # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        # os.environ["MOZ_HEADLESS"] = '1'
+        os.environ["MOZ_HEADLESS"] = '1'
         self.driver = webdriver.Firefox(executable_path=".\geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
@@ -63,7 +64,7 @@ class Newegg_Crawler:
             action_chain.perform()
         except MoveTargetOutOfBoundsException as e:
             print(e)
-            time.sleep(5)
+            time.sleep(1)
             self.driver.execute_script('window.scrollTo(1,' + str(target.location['y'] - 200) + ')')
             action_chain.perform()
         except WebDriverException as e:
@@ -80,32 +81,29 @@ class Newegg_Crawler:
         try:
             WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'mainSlide')))
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'Details_Tab')))
-        except NoSuchElementException as e:
-            print(e)
-        except TimeoutException as e:
-            print(e)
+            time.sleep(3)
+            html = self.driver.page_source
+            product_page = BeautifulSoup(html, 'lxml')
+            product_img_id = product_page.find('span', {'class': 'mainSlide'}).find('img')['id']
+            product_img = product_page.find('img', {'id': product_img_id})
 
-        html = self.driver.page_source
-        product_page = BeautifulSoup(html, 'lxml')
-        product_img_id = product_page.find('span', {'class': 'mainSlide'}).find('img')['id']
-        product_img = product_page.find('img', {'id': product_img_id})
+        except (NoSuchElementException, TimeoutException, AttributeError) as e:
+            print(e)
+            return None, None, None
 
         product_id = product_img_id[10:]
+
         if product_img_id[10] == '0':
             product_id = product_img_id[11:]
 
         product_imgsrc = product_img['src']
-        try:
-            spec_tab = self.driver.find_element_by_id('Details_Tab')
-            print(spec_tab.get_attribute('style'))
-            if not spec_tab.is_displayed():
-                print('There is no product detail.. skip.')
-                self.worse_case = True
-        except WebDriverException as e:
-            print(e,') There is no product detail.. skip.')
+
+        spec_tab = self.driver.find_element_by_id('Details_Tab')
+        print(spec_tab.get_attribute('style'))
+        if not spec_tab.is_displayed(): # Specification Tab이 없는 경우..
             self.worse_case = True
 
-        print('poductID : %s\nproductImgSource : %s' % (product_id, product_imgsrc))
+        print('poductID: %s\nproductImgSource: %s' % (product_id, product_imgsrc))
 
         return spec_tab, product_id, product_imgsrc
 
@@ -126,19 +124,17 @@ class Newegg_Crawler:
 
         # Product Spec Crawling End
 
-
-
         try:
             make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
         except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
 
             if 'Brand' in model_dict.keys() and 'Part Number' in model_dict.keys():
                 model_dict['Model'] = model_dict['Part Number']
-
-            print(product_title.get_text(strip=True),"을 구글에서 검색합니다.")
-            make_csv.save_csv(product_id,'', '', product_title.get_text(strip=True))
-            model_dict['Brand'] = ''
-            model_dict['Model'] = ''
+            else:
+                print(product_title.get_text(strip=True),"을 구글에서 검색합니다.")
+                make_csv.save_csv(product_id,'', '', product_title.get_text(strip=True))
+                model_dict['Brand'] = ''
+                model_dict['Model'] = ''
 
         review_tab = self.driver.find_element_by_id('Community_Tab')
 
@@ -166,7 +162,7 @@ class Newegg_Crawler:
             wr = csv.writer(ri)
 
         total_review = 0
-
+        ''' Skip crawling IMG
         print('IMG Downloading...')
         print('https:'+product_imgsrc)
         try:
@@ -182,9 +178,9 @@ class Newegg_Crawler:
             print('img download rejected.. retry after 15secs')
             time.sleep(15)
             urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
+        '''
 
-
-        while(True):
+        while True:
             try:
                 WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'rn-boxContent')))
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'reviewPageSize')))
@@ -226,76 +222,76 @@ class Newegg_Crawler:
 
                 if reviewBodyForm == 3:
                     if existTitle:
-                        wr.writerow([product_id, \
-                                review.find("span", {"itemprop" : "ratingValue"}).text, \
-                                review.find("span", {"class" : "comments-title-content"}).text, \
-                                review.find("span", {"class" : "comments-time-right"})['content'], \
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True), \
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True), \
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True), \
-                                voted_Y, \
+                        wr.writerow([product_id,
+                                review.find("span", {"itemprop" : "ratingValue"}).text,
+                                review.find("span", {"class" : "comments-title-content"}).text,
+                                review.find("span", {"class" : "comments-time-right"})['content'],
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True),
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True),
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True),
+                                voted_Y,
                                 voted_N])
                     else:
-                        wr.writerow([product_id, \
-                                     review.find("span", {"itemprop": "ratingValue"}).text, \
-                                     None, \
-                                     review.find("span", {"class": "comments-time-right"})['content'], \
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True), \
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True), \
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[2].get_text(strip=True), \
-                                     voted_Y, \
+                        wr.writerow([product_id,
+                                     review.find("span", {"itemprop": "ratingValue"}).text,
+                                     None,
+                                     review.find("span", {"class": "comments-time-right"})['content'],
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True),
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[2].get_text(strip=True),
+                                     voted_Y,
                                      voted_N])
                 elif reviewBodyForm == 2:
                     if existTitle:
-                        wr.writerow([product_id, \
-                                review.find("span", {"itemprop" : "ratingValue"}).text, \
-                                review.find("span", {"class" : "comments-title-content"}).text, \
-                                review.find("span", {"class" : "comments-time-right"})['content'], \
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True), \
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True), \
-                                None, \
-                                voted_Y, \
+                        wr.writerow([product_id,
+                                review.find("span", {"itemprop" : "ratingValue"}).text,
+                                review.find("span", {"class" : "comments-title-content"}).text,
+                                review.find("span", {"class" : "comments-time-right"})['content'],
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True),
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True),
+                                None,
+                                voted_Y,
                                 voted_N])
                     else:
-                        wr.writerow([product_id, \
-                                review.find("span", {"itemprop": "ratingValue"}).text, \
-                                None, \
-                                review.find("span", {"class": "comments-time-right"})['content'], \
-                                review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True), \
-                                review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True), \
-                                None, \
-                                voted_Y, \
+                        wr.writerow([product_id,
+                                review.find("span", {"itemprop": "ratingValue"}).text,
+                                None,
+                                review.find("span", {"class": "comments-time-right"})['content'],
+                                review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True),
+                                None,
+                                voted_Y,
                                 voted_N])
                 elif reviewBodyForm == 1:
                     if existTitle:
-                        wr.writerow([product_id, \
-                                 review.find("span", {"itemprop": "ratingValue"}).text, \
-                                 review.find("span", {"class": "comments-title-content"}).text, \
-                                 review.find("span", {"class": "comments-time-right"})['content'], \
-                                 None, \
-                                 None, \
-                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True), \
-                                 voted_Y, \
+                        wr.writerow([product_id,
+                                 review.find("span", {"itemprop": "ratingValue"}).text,
+                                 review.find("span", {"class": "comments-title-content"}).text,
+                                 review.find("span", {"class": "comments-time-right"})['content'],
+                                 None,
+                                 None,
+                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                 voted_Y,
                                  voted_N])
                     else:
-                        wr.writerow([product_id, \
-                                 review.find("span", {"itemprop": "ratingValue"}).text, \
-                                 None, \
-                                 review.find("span", {"class": "comments-time-right"})['content'], \
-                                 None, \
-                                 None, \
-                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True), \
-                                 voted_Y, \
+                        wr.writerow([product_id,
+                                 review.find("span", {"itemprop": "ratingValue"}).text,
+                                 None,
+                                 review.find("span", {"class": "comments-time-right"})['content'],
+                                 None,
+                                 None,
+                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                 voted_Y,
                                  voted_N])
                 else: # 0 , -1
                     if existTitle:
-                        wr.writerow([product_id, \
-                                 review.find("span", {"itemprop": "ratingValue"}).text, \
-                                 review.find("span", {"class": "comments-title-content"}).text, \
-                                 review.find("span", {"class": "comments-time-right"})['content'], \
-                                 None, \
-                                 None, \
-                                 None, \
+                        wr.writerow([product_id,
+                                 review.find("span", {"itemprop": "ratingValue"}).text,
+                                 review.find("span", {"class": "comments-title-content"}).text,
+                                 review.find("span", {"class": "comments-time-right"})['content'],
+                                 None,
+                                 None,
+                                 None,
                                  voted_Y,
                                  voted_N])
                     else:
@@ -305,40 +301,51 @@ class Newegg_Crawler:
             self.driver.find_element_by_id('reviewPageSize')
             btn = selectedItem.find_all("button", {"onclick": "Biz.ProductReview2017.Pagination.nextbuttonClick()"})
             print("Next Page...")
-            if (len(btn) == 0 or (btn[0].get("disabled") == "")): # 다음 버튼이 아예 존재하지 않거나
+            if len(btn) == 0 or btn[0].get("disabled") == "": # 다음 버튼이 아예 존재하지 않거나
                 time.sleep(1)
                 print('review crawling Done.')
                 ri.close()
                 break
             pi.close()
-        print('%s reviews are added.' % (total_review))
+        print('%s reviews are added.' % total_review)
+
+
+def retry_msg(error):
+    print(error+' Crawler will retry for this product after 5sec..')
+    time.sleep(5)
+
 
 def main():
     page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=REVIEWS&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(20, 101):
+    for page_number in range(39, 101):
         product_index = 0
-        make_csv = pricetocsv.PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
+        make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))
-
+        # time.sleep(100)
         titles = crawler.list_crawler()
         while(product_index < len(titles)):
-            if len(titles) == 0 :
-                print('Product list page is not loaded.')
-                print('Retry go to back.')
-                time.sleep(2)
-                crawler.driver.back()
+
             titles = crawler.list_crawler()
-            print(crawler.worse_case,' | ',product_index,'/',len(titles))
+            if not titles:
+                retry_msg('Product list page is not loaded..')
+                crawler.driver.back()
+
+            print(crawler.worse_case, ' | ', product_index, '/', len(titles))
 
             crawler.action_chaining(titles[product_index])
 
             spec_tab, product_id, product_imgsrc = crawler.img_crawler()
+
+            if (not product_imgsrc) or (not product_id) or (not spec_tab):  # 이미지 소스, 제품 아이디, 스펙 탭 한가지라도 없는 경우
+                retry_msg('Image Crawling is incomplete..')
+                continue
+
             crawler.action_chaining(spec_tab)
             if crawler.worse_case: # 제품 상세정보가 부족한 경우 제품 스킵
-                product_index += 1
+                retry_msg('There is no product detail.. ')
                 crawler.worse_case = False
-                time.sleep(5)
+                product_index += 1
                 crawler.driver.back()
                 continue
 
