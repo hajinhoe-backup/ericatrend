@@ -1,8 +1,10 @@
+# encoding: utf-8
 # Built-in Lib
 import time
 import re
 import csv
 import os
+import sys
 
 # Third-party Lib
 from bs4 import BeautifulSoup
@@ -25,11 +27,16 @@ import pricetocsv
 class Newegg_Crawler:
 
     def __init__(self):
+        firefox_addon = u'/home/ubuntu/.mozilla/firefox/18qqhqet.default/extensions/{cde47992-8aa7-4206-9e98-680a2d20f798}.xpi'
         firefox_profile = webdriver.FirefoxProfile()
         # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
-        firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0')
-        os.environ["MOZ_HEADLESS"] = '1'
-        self.driver = webdriver.Firefox(executable_path=".\geckodriver.exe", firefox_profile=firefox_profile)
+        firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0')
+        # os.environ["MOZ_HEADLESS"] = '1'
+        #firefox_profile.set_preference("network.proxy.type", 1)
+        #firefox_profile.set_preference("network.proxy.socks", "127.0.0.1")
+        #firefox_profile.set_preference("network.proxy.socks_port", 9050)
+        #firefox_profile.add_extension(firefox_addon)
+        self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
         self.worse_case = False
@@ -131,7 +138,6 @@ class Newegg_Crawler:
             if 'Brand' in model_dict.keys() and 'Part Number' in model_dict.keys():
                 model_dict['Model'] = model_dict['Part Number']
             else:
-                print(product_title.get_text(strip=True),"을 구글에서 검색합니다.")
                 make_csv.save_csv(product_id,'', '', product_title.get_text(strip=True))
                 model_dict['Brand'] = ''
                 model_dict['Model'] = ''
@@ -226,9 +232,9 @@ class Newegg_Crawler:
                                 review.find("span", {"itemprop" : "ratingValue"}).text,
                                 review.find("span", {"class" : "comments-title-content"}).text,
                                 review.find("span", {"class" : "comments-time-right"})['content'],
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True),
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True),
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True),
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True)[5:],
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True)[5:],
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[2].get_text(strip=True)[15:],
                                 voted_Y,
                                 voted_N])
                     else:
@@ -236,9 +242,9 @@ class Newegg_Crawler:
                                      review.find("span", {"itemprop": "ratingValue"}).text,
                                      None,
                                      review.find("span", {"class": "comments-time-right"})['content'],
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True),
-                                     review.find("div", {"itemprop": "reviewBody"})('p')[2].get_text(strip=True),
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True)[5:],
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True)[5:],
+                                     review.find("div", {"itemprop": "reviewBody"})('p')[2].get_text(strip=True)[15:],
                                      voted_Y,
                                      voted_N])
                 elif reviewBodyForm == 2:
@@ -247,8 +253,8 @@ class Newegg_Crawler:
                                 review.find("span", {"itemprop" : "ratingValue"}).text,
                                 review.find("span", {"class" : "comments-title-content"}).text,
                                 review.find("span", {"class" : "comments-time-right"})['content'],
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True),
-                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True),
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[0].get_text(strip=True)[5:],
+                                review.find("div", {"itemprop" : "reviewBody"})('p')[1].get_text(strip=True)[5:],
                                 None,
                                 voted_Y,
                                 voted_N])
@@ -257,8 +263,8 @@ class Newegg_Crawler:
                                 review.find("span", {"itemprop": "ratingValue"}).text,
                                 None,
                                 review.find("span", {"class": "comments-time-right"})['content'],
-                                review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
-                                review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True),
+                                review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True)[5:],
+                                review.find("div", {"itemprop": "reviewBody"})('p')[1].get_text(strip=True)[5:],
                                 None,
                                 voted_Y,
                                 voted_N])
@@ -270,7 +276,7 @@ class Newegg_Crawler:
                                  review.find("span", {"class": "comments-time-right"})['content'],
                                  None,
                                  None,
-                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True)[15:],
                                  voted_Y,
                                  voted_N])
                     else:
@@ -280,7 +286,7 @@ class Newegg_Crawler:
                                  review.find("span", {"class": "comments-time-right"})['content'],
                                  None,
                                  None,
-                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True),
+                                 review.find("div", {"itemprop": "reviewBody"})('p')[0].get_text(strip=True)[15:],
                                  voted_Y,
                                  voted_N])
                 else: # 0 , -1
@@ -316,13 +322,16 @@ def retry_msg(error):
 
 
 def main():
-    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=6740&PageSize=36&order=REVIEWS&Page='
+    page_url = 'https://www.newegg.com/Product/ProductList.aspx?Submit=ENE&N=100007709%204814&IsNodeId=1&bop=And&Order=REVIEWS&PageSize=36&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(39, 101):
-        product_index = 0
+    for page_number in range(1, 101):
+        product_index = 0 
         make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))
-        # time.sleep(100)
+        
+        if page_number != 1:
+            time.sleep(120)
+        
         titles = crawler.list_crawler()
         while(product_index < len(titles)):
 
@@ -330,6 +339,7 @@ def main():
             if not titles:
                 retry_msg('Product list page is not loaded..')
                 crawler.driver.back()
+                continue
 
             print(crawler.worse_case, ' | ', product_index, '/', len(titles))
 
