@@ -1,6 +1,7 @@
 import keepa
 import csv
 import re
+import os
 import http.client, urllib.parse, json
 
 '''
@@ -24,6 +25,12 @@ brand 나 model이 없는 경우 빈 스트링 입력후, 제목 입력 바람
 brand하고 model이 없는 경우,
 brand의 경우 대부분 맨 앞에 있는 단어인데,
 이것을 문자열 처리로 저장해서 cvs에 저장할 데이터로 취급 할 것인가?
+
+
+업데이트 4.28
+큐오팅 업데이트
+기본값으로 create 시에 기존 파일이 있으면 append로 작동하게 됨.
+0 값을 기록하지 않도록 변경함.
 '''
 
 class NoFile(Exception):
@@ -87,24 +94,55 @@ class PriceToCSV:
 
         raise NoASIN
 
-    def create_csv(self, file_name=None):
+    def create_csv(self, file_name=None, allow_append=True):
         if file_name:
             self.saved_file_name = file_name
-        with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(['id', 'date', 'price'])
-        with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow(['id', 'asin'])
+
+        do_append = False
+
+        if allow_append:
+            if os.path.isfile('data/price/price_info_{0}.csv'.format(self.saved_file_name)):
+                with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'r', newline='') as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+                    for row in csv_reader: # for _ in _ 형식으로만 읽을 수 있음. 임의 접근이 안 됨.
+                        if row == ['id', 'date', 'price']:
+                            do_append = True
+                        else:
+                            do_append = False
+                        break
+            else:
+                do_append = False
+
+            if do_append and os.path.isfile('data/price/{0}_idtoasin.csv'.format(self.saved_file_name)):
+                with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'r', newline='') as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+                    for row in csv_reader:  # for _ in _ 형식으로만 읽을 수 있음. 임의 접근이 안 됨.
+                        if row == ['id', 'asin']:
+                            do_append = True
+                        else:
+                            do_append = False
+                        break
+            else:
+                do_append = False
+
+        if not do_append:
+            with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+                csv_writer.writerow(['id', 'date', 'price'])
+            with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'w', newline='') as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+                csv_writer.writerow(['id', 'asin'])
+
         self.is_file_created = True
 
     def write_csv(self, id, product_asin, price_zip_list):
         with open('data/price/price_info_{0}.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+            csv_writer = csv.writer(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
             for row in price_zip_list:
-                csv_writer.writerow([id] + list(row))
+                if row[1] == row[1] and row[1] != 0: # Nan 이면 자기 자신과 비교했을 때, False가 나옵니다.
+                    csv_writer.writerow([id] + list(row))
         with open('data/price/{0}_idtoasin.csv'.format(self.saved_file_name), 'a', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar=',', quoting=csv.QUOTE_MINIMAL)
+            csv_writer = csv.writer(csv_file, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
             csv_writer.writerow([id, product_asin])
 
     def get_prices(self, product_asin):
@@ -133,7 +171,7 @@ class PriceToCSV:
             print('There are no data in keepa for the ASIN or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-'''
+
 make_csv = PriceToCSV()
 make_csv.create_csv()
 
@@ -141,7 +179,7 @@ make_csv.create_csv()
 make_csv.save_csv('A23213D', '', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
 make_csv.create_csv('amazon')
 make_csv.save_csv('D34124', 'apple', 'iphoneX')
-'''
+
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')
 make_csv.create_csv()
