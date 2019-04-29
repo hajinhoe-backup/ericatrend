@@ -237,12 +237,15 @@ class Newegg_Crawler:
                 existTitle = True
                 try:
                     review.find("span", {"class" : "comments-title-content"}).text # 타이틀 존재 여부
+                except AttributeError as e:
+                     existTitle = False
+                        
+                try:
                     reviewBodyForm = len(review.find("div", {"itemprop" : "reviewBody"})('p')) # p 태그 갯수로 리뷰 형식 판단
                 except TypeError as e:
                     reviewBodyForm = 0
                     pass
-                except AttributeError as e:
-                     existTitle = False
+                
 
                 if reviewBodyForm == 3:
                     if existTitle:
