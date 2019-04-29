@@ -134,6 +134,8 @@ class Newegg_Crawler:
                 else:
                     model_dict[data.contents[0].string] = data.contents[1].string
 
+        model_dict['Title'] = product_title
+
         if not self.pricecsv_exist:
             make_csv.create_csv(page_number)
             self.pricecsv_exist = True
@@ -171,7 +173,7 @@ class Newegg_Crawler:
 
             wr = csv.writer(pi, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
             wr.writerow(["id", "Brand", "Model", ] + ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features'])
-            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]] + [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"], model_dict["Title"]] + [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
 
             wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
             wr.writerow(["id","Star","Title","Date","Pros","Cons","Other","Voted_Y","Voted_N"])
@@ -179,7 +181,7 @@ class Newegg_Crawler:
             ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
             pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
             wr = csv.writer(pi, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
-            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]]+ [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"], model_dict["Title"]]+ [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
             wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
 
         total_review = 0
