@@ -122,15 +122,17 @@ class Newegg_Crawler:
         product_title = html.find('h1', {'id': 'grpDescrip_h'})
         product_page = product_page.find_all('fieldset', limit=2)
         model_html = product_page[0].find_all('dl')
-        model_info = product_page[1].find_all('dl') # quick 인포 부분, 노트북 제품군에만 있음
         model_dict = {}
         for data in model_html:
             model_dict[data.contents[0].string] = data.contents[1].string
-        for data in model_info:
-            if data.contents[0].string == 'Dimensions (W x D x H)':
-                model_dict['Dimensions'] = data.contents[1].string
-            else:
-                model_dict[data.contents[0].string] = data.contents[1].string
+
+        if len(product_page[1]) == 2:
+            model_info = product_page[1].find_all('dl')  # quick 인포 부분, 노트북 제품군에만 있음
+            for data in model_info:
+                if data.contents[0].string == 'Dimensions (W x D x H)':
+                    model_dict['Dimensions'] = data.contents[1].string
+                else:
+                    model_dict[data.contents[0].string] = data.contents[1].string
 
         if not self.pricecsv_exist:
             make_csv.create_csv(page_number)

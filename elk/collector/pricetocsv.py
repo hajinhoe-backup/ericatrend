@@ -85,6 +85,9 @@ class PriceToCSV:
         if not searched_items:
             searched_items = self.bing_search.search('site:www.amazon.com ' + product_name)
 
+        if not searched_items: # 한번 더 했는데 없는 경우 에러를 띄운다.
+            raise NoASIN
+
         for item in searched_items:
             if item['url']:
                 searched_re = re.search('https://www.amazon.com/.+?/dp/(?P<ASIN>\w{10})', item['url'])
