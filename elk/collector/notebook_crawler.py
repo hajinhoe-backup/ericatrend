@@ -27,7 +27,7 @@ import pricetocsv
 class Newegg_Crawler:
 
     def __init__(self):
-        firefox_addon = u'/home/ubuntu/.mozilla/firefox/18qqhqet.default/extensions/{cde47992-8aa7-4206-9e98-680a2d20f798}.xpi'
+        #firefox_addon = u'/home/ubuntu/.mozilla/firefox/18qqhqet.default/extensions/{cde47992-8aa7-4206-9e98-680a2d20f798}.xpi'
         firefox_profile = webdriver.FirefoxProfile()
         # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0')
@@ -36,7 +36,8 @@ class Newegg_Crawler:
         #firefox_profile.set_preference("network.proxy.socks", "127.0.0.1")
         #firefox_profile.set_preference("network.proxy.socks_port", 9050)
         #firefox_profile.add_extension(firefox_addon)
-        self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
+        #self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
+        self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
         self.worse_case = False
@@ -119,11 +120,17 @@ class Newegg_Crawler:
         html = BeautifulSoup(html, 'lxml')
         product_page = html.find('div', {'id': 'detailSpecContent'})
         product_title = html.find('h1', {'id': 'grpDescrip_h'})
-        product_page = product_page.find('fieldset')
-        model_html = product_page.find_all('dl')
+        product_page = product_page.find_all('fieldset', limit=2)
+        model_html = product_page[0].find_all('dl')
+        model_info = product_page[1].find_all('dl') # quick 인포 부분, 노트북 제품군에만 있음
         model_dict = {}
         for data in model_html:
             model_dict[data.contents[0].string] = data.contents[1].string
+        for data in model_info:
+            if data.contents[0].string == 'Dimensions (W x D x H)':
+                model_dict['Dimensions'] = data.contents[1].string
+            else:
+                model_dict[data.contents[0].string] = data.contents[1].string
 
         if not self.pricecsv_exist:
             make_csv.create_csv(page_number)
@@ -133,14 +140,20 @@ class Newegg_Crawler:
 
         try:
             make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
-        except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
-
+        except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.   <<<---- 여기가 좀 이상한 것 같아요. 수정했는데 봐주세요.
             if 'Brand' in model_dict.keys() and 'Part Number' in model_dict.keys():
                 model_dict['Model'] = model_dict['Part Number']
             else:
-                make_csv.save_csv(product_id,'', '', product_title.get_text(strip=True))
-                model_dict['Brand'] = ''
-                model_dict['Model'] = ''
+                if 'Brand' not in model_dict.keys():
+                    model_dict['Brand'] = ''
+                if 'Model' not in model_dict.keys():
+                    model_dict['Model'] = ''
+            make_csv.save_csv(product_id, '', '', product_title.get_text(strip=True))
+
+        #Quick info (스펙정보) 관련
+        for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']:
+            if item not in model_dict.keys():
+                model_dict[item] = ''
 
         review_tab = self.driver.find_element_by_id('Community_Tab')
 
@@ -154,18 +167,18 @@ class Newegg_Crawler:
             ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
             pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
 
-            wr = csv.writer(pi)
-            wr.writerow(["id", "Brand", "Model"])
-            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]])
+            wr = csv.writer(pi, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+            wr.writerow(["id", "Brand", "Model", ] + ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features'])
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]] + [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
 
-            wr = csv.writer(ri)
+            wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
             wr.writerow(["id","Star","Title","Date","Pros","Cons","Other","Voted_Y","Voted_N"])
         else:
             ri = open("data/review/review_info_{0}.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
             pi = open("data/review/{0}_product_info.csv".format(str(page_number)), "a", encoding="utf-8", newline="")
-            wr = csv.writer(pi)
-            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]])
-            wr = csv.writer(ri)
+            wr = csv.writer(pi, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
+            wr.writerow([product_id, model_dict["Brand"], model_dict["Model"]]+ [model_dict[item] for item in ['Color', 'Operating System', 'CPU', 'Screen', 'Memory', 'Storage', 'Graphics Card', 'Video Memory', 'Communication', 'Dimensions', 'Weight', 'Other Features']])
+            wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
 
         total_review = 0
         ''' Skip crawling IMG
@@ -322,7 +335,7 @@ def retry_msg(error):
 
 
 def main():
-    page_url = 'https://www.newegg.com/Product/ProductList.aspx?Submit=ENE&N=100007709%204814&IsNodeId=1&bop=And&Order=REVIEWS&PageSize=36&Page='
+    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=708948&PageSize=96&Order=RELEASE&Page='
     crawler = Newegg_Crawler()
     for page_number in range(1, 101):
         product_index = 0 
