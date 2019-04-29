@@ -1,5 +1,6 @@
 # encoding: utf-8
 # Built-in Lib
+import random
 import time
 import re
 import csv
@@ -144,7 +145,7 @@ class Newegg_Crawler:
 
         try:
             make_csv.save_csv(product_id, model_dict['Brand'], model_dict['Model'])
-        except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.   <<<---- 여기가 좀 이상한 것 같아요. 수정했는데 봐주세요.
+        except KeyError as e: # 브랜드나 모델 둘 중 한개라도 없는 경우 타이틀을 넣는다.
             if 'Brand' in model_dict.keys() and 'Part Number' in model_dict.keys():
                 model_dict['Model'] = model_dict['Part Number']
             else:
@@ -205,6 +206,7 @@ class Newegg_Crawler:
 
         while True:
             try:
+                time.sleep(random.randint(0, 10)) # 차단 방지를 위한 임의시간 대기 3
                 WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'rn-boxContent')))
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'reviewPageSize')))
             except TimeoutException:
@@ -234,14 +236,13 @@ class Newegg_Crawler:
             
                 existTitle = True
                 try:
-                    review.find("span", {"class" : "comments-title-content"}).text
-                except AttributeError as e:
-                     existTitle = False
-                try:
-                    reviewBodyForm = len(review.find("div", {"itemprop" : "reviewBody"})('p'))
+                    review.find("span", {"class" : "comments-title-content"}).text # 타이틀 존재 여부
+                    reviewBodyForm = len(review.find("div", {"itemprop" : "reviewBody"})('p')) # p 태그 갯수로 리뷰 형식 판단
                 except TypeError as e:
                     reviewBodyForm = 0
                     pass
+                except AttributeError as e:
+                     existTitle = False
 
                 if reviewBodyForm == 3:
                     if existTitle:
@@ -320,15 +321,17 @@ class Newegg_Crawler:
                     else:
                         print("mfr's comment DETECTED!!!")
 
-            self.driver.execute_script("Biz.ProductReview2017.Pagination.nextbuttonClick()") # 다음 리뷰페이지로 넘김
+            btn = self.driver.find_elements_by_xpath(
+                "//button[@onclick='Biz.ProductReview2017.Pagination.nextbuttonClick()']")
             self.driver.find_element_by_id('reviewPageSize')
-            btn = selectedItem.find_all("button", {"onclick": "Biz.ProductReview2017.Pagination.nextbuttonClick()"})
             print("Next Page...")
-            if len(btn) == 0 or btn[0].get("disabled") == "": # 다음 버튼이 아예 존재하지 않거나
+            if len(btn) == 0 or not btn[0].is_enabled(): # 다음 버튼이 아예 존재하지 않거나
                 time.sleep(1)
                 print('review crawling Done.')
                 ri.close()
                 break
+            else :
+                btn[0].click()
             pi.close()
         print('%s reviews are added.' % total_review)
 
@@ -339,19 +342,20 @@ def retry_msg(error):
 
 
 def main():
-    page_url = 'https://www.newegg.com/global/kr-en/Store/SubCategory.aspx?SubCategory=32&Tid=708948&PageSize=96&Order=RELEASE&Page='
+    page_url = 'https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(1, 101):
+    for page_number in range(1, 101): # 제품 카테고리 페이지
         product_index = 0 
         make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))
         
         if page_number != 1:
-            time.sleep(120)
+            time.sleep(random.randint(0,40)*60) # 차단 방지를 위한 임의시간 대기 1
         
         titles = crawler.list_crawler()
-        while(product_index < len(titles)):
-
+        while(product_index < len(titles)): # 제품 내의 리뷰 페이지
+            if product_index != 0:
+                time.sleep(random.randint(0, 2) * 60) # 차단 방지를 위한 임의시간 대기 2
             titles = crawler.list_crawler()
             if not titles:
                 retry_msg('Product list page is not loaded..')
