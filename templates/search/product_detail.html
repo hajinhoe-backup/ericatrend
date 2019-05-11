@@ -46,13 +46,14 @@
                         <div class="col-md-12">
                             <div class="card-body">
                                 <h5 class="card-title">{{ review['title'] }}
-                                    {% for i in range(5) %}
                                     <span class="product_star">
+                                    {% for i in range(5) %}
                                     {% if i < review['star'] %}
                                     <i class="fas fa-star"></i>
                                     {% else %}
                                     <i class="fas fa-star"></i>
                                     {% endif %}
+                                    {% endfor %}
                                     </span></h5>
                                 <p class="card-text">{{ review['pros'] }} {{ review['cons'] }}</p>
                                 <p class="card-text good_review"><i class="far fa-thumbs-up"></i> {{ review['helpful'] + review['unhelpful'] }}명 중 {{ review['helpful'] }}명이 추천한 리뷰</p>
