@@ -174,15 +174,16 @@ class PriceToCSV:
             print('There are no data in keepa for the ASIN or Search server seems having some problems.')
         except NoFile:
             print('please, make file first.')
-'''
+
 make_csv = PriceToCSV()
 make_csv.create_csv()
 
-
+'''
 make_csv.save_csv('A23213D', '', '', 'Apple 15.4" MacBook Pro Laptop Computer with Retina Display & Force Touch Trackpad (Mid 2015)')
 make_csv.create_csv('amazon')
-make_csv.save_csv('D34124', 'apple', 'iphoneX')
 '''
+make_csv.save_csv('D34124', 'ASUS', 'UX430UA-Q52S-CB')
+
 
 '''
 make_csv = PriceToCSV('2b63aol2vkmetj1lb1vii4a2knk9c07ik7bru5ihlctovg5t71mrtg3g48jfffd3')

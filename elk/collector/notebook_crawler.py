@@ -347,7 +347,7 @@ def retry_msg(error):
 def main():
     page_url = 'https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(1, 101): # 제품 카테고리 페이지
+    for page_number in range(10, 101): # 제품 카테고리 페이지
         product_index = 0 
         make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))

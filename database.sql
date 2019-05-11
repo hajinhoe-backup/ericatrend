@@ -6,6 +6,19 @@ CREATE TABLE product (
   newegg_id VARCHAR(20),
   brand text,
   model text,
+  title text,
+  color text,
+  os text,
+  cpu text,
+  screen text,
+  memory text,
+  storage text,
+  vga text,
+  vram text,
+  network text,
+  dimensions text,
+  weight text,
+  others text,
   PRIMARY KEY (newegg_id)
 );
 
