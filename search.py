@@ -64,9 +64,12 @@ def product_detail(newegg_id=None):
             sql = "SELECT `newegg_id`, `brand`, `model` FROM `product` WHERE `newegg_id` = %s"
             cursor.execute(sql, (newegg_id, ))
             result = cursor.fetchone()
+            sql = "SELECT `title`, `date`, `pros`, `cons`, `star`, `helpful`, `unhelpful` FROM `review` WHERE `newegg_id`= %s ORDER BY `date` LIMIT 10"
+            cursor.execute(sql, (newegg_id,))
+            reviews = cursor.fetchall()
     finally:
         connection.close()
-    return render_template('search/product_detail.html', product=result)
+    return render_template('search/product_detail.html', product=result, reviews=reviews)
 
 @bp.route('/list', methods=('get', 'post'))
 def products(keyword, page, products_info):
