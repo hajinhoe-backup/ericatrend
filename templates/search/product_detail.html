@@ -35,7 +35,7 @@
         </section>
         <section>
             <h2>별점 그래프</h2>
-            <p>파이썬으로 그려야함</p>
+            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/81cbcad0-73cc-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:star,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:segment,type:terms)),params:(addLegend:!t,addTooltip:!t,isDonut:!f,labels:(last_level:!t,show:!t,truncate:100,values:!t),legendPosition:right,type:pie),title:start_chart,type:pie))" height="600" width="800"></iframe>
         </section>
         <section id="helpful_review">
             <h2>리뷰</h2>
@@ -63,7 +63,7 @@
         </section>
         <section>
             <h2>가격 동향</h2>
-            <p>키바나에서 빼옴</p>
+            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/0688c910-73c5-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'5522f790-73c4-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(field:price),schema:metric,type:min),(enabled:!t,id:'2',params:(customInterval:'2h',drop_partials:!f,extended_bounds:(),field:date,interval:auto,min_doc_count:1,timeRange:(from:now-5y,mode:quick,to:now),time_zone:Asia%2FTokyo,useNormalizedEsInterval:!t),schema:segment,type:date_histogram)),params:(addLegend:!t,addTimeMarker:!t,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,style:(color:%23eee),valueAxis:ValueAxis-1),legendPosition:right,seriesParams:!((data:(id:'1',label:'Min+price'),drawLinesBetweenPoints:!t,interpolate:step-after,mode:normal,show:true,showCircles:!t,type:line,valueAxis:ValueAxis-1)),times:!(),type:line,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Min+price'),type:value))),title:price_graph,type:line))" height="600" width="800"></iframe>
         </section>
     </div>
 {% endblock %}
