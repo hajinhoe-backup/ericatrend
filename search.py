@@ -24,8 +24,8 @@ def process():
 
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='dekiru6120',
+                                 user='erica',
+                                 password='hosugongwon',
                                  db='notebook_db',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
@@ -52,8 +52,8 @@ def product_detail(newegg_id=None):
         newegg_id = request.args.get('newegg_id')
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='dekiru6120',
+                                 user='erica',
+                                 password='hosugongwon',
                                  db='notebook_db',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
@@ -100,8 +100,8 @@ def compare():
 
 
     connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='dekiru6120',
+                                 user='erica',
+                                 password='hosugongwon',
                                  db='notebook_db',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
