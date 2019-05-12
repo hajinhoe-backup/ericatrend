@@ -24,8 +24,8 @@ def process():
 
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
-                                 user='erica',
-                                 password='hosugongwon',
+                                 user='root',
+                                 password='dekiru6120',
                                  db='notebook_db',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
@@ -52,8 +52,8 @@ def product_detail(newegg_id=None):
         newegg_id = request.args.get('newegg_id')
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
-                                 user='erica',
-                                 password='hosugongwon',
+                                 user='root',
+                                 password='dekiru6120',
                                  db='notebook_db',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
@@ -78,3 +78,40 @@ def products(keyword, page, products_info):
 @bp.route('/all_list', methods=('get', 'post'))
 def all_products():
     return render_template('search/all_products.html')
+
+@bp.route('/compare', methods=('get', 'post'))
+def compare():
+    if request.args.get('compare_type'):
+        compare_type = request.args.get('compare_type')
+    else:
+        compare_type = None
+
+    parameters = []
+
+    if compare_type == 'brand':
+        parameters.append(request.args.get('first_brand'))
+        parameters.append(request.args.get('second_brand'))
+        parameters.append(request.args.get('third_brand'))
+        parameters.append(request.args.get('forth_brand'))
+    elif compare_type == 'price':
+        parameters.append(request.args.get('first_range').split(';'))
+        parameters.append(request.args.get('second_range').split(';'))
+        parameters.append(request.args.get('third_range').split(';'))
+
+
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='dekiru6120',
+                                 db='notebook_db',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+
+    try:
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT DISTINCT `brand` FROM `product` WHERE `brand` != '' ORDER BY `brand` ASC"
+            cursor.execute(sql)
+            brands = cursor.fetchall()
+    finally:
+        connection.close()
+    return render_template('search/compare.html', brands=brands, compare_type=compare_type, parameters=parameters)

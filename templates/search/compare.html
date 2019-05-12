@@ -1,0 +1,163 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    제품 상세 보기
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="../../static/product_view.css">
+    <link rel="stylesheet" href="../../static/product_detail.css">
+
+    <!--Plugin CSS file with desired skin-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css"/>
+
+    <!--Plugin JavaScript file-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
+
+    <script>
+        $(function () {
+            $(".js-range-slider").ionRangeSlider();
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div id = "contents">
+
+        <nav>
+            <a href="{{ url_for('main.main') }}">메인 화면</a>
+        </nav>
+        <header>
+            <h1>트랜드 검색 : 비교하기</h1>
+            <form action="{{ url_for('search.process') }}" method="get">
+            <div id = "search_box" class="input-group mb-3">
+                <input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            </form>
+        </header>
+        <section>
+            <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">브랜드</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">가격대</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                <p>브랜드를 4개 선택할 수 있습니다.</p>
+                <form action="{{ url_for('search.compare') }}">
+                    <select class="form-control" id="first_brand" name="first_brand">
+                        {% for brand in brands %}
+                            <option>{{ brand['brand'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" id="second_brand" name="second_brand">
+                        {% for brand in brands %}
+                            <option>{{ brand['brand'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" id="third_brand" name="third_brand">
+                        {% for brand in brands %}
+                            <option>{{ brand['brand'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" id="forth_brand" name="forth_brand">
+                        {% for brand in brands %}
+                            <option>{{ brand['brand'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="compare_type" value="brand">
+                    <button class="btn btn-primary mb-2" type="submit">찾아보기</button>
+                </form>
+              </div>
+              <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                  <p>가격대를 3개 선택할 수 있습니다.</p>
+                  <form action="{{ url_for('search.compare') }}">
+                        <input type="text" class="js-range-slider" name="first_range" value=""
+                            data-type="double"
+                            data-min="0"
+                            data-max="2000"
+                            data-from="0"
+                            data-to="500"
+                            data-grid="true"
+                        />
+                        <input type="text" class="js-range-slider" name="second_range" value=""
+                            data-type="double"
+                            data-min="0"
+                            data-max="2000"
+                            data-from="0"
+                            data-to="500"
+                            data-grid="true"
+                        />
+                        <input type="text" class="js-range-slider" name="third_range" value=""
+                            data-type="double"
+                            data-min="0"
+                            data-max="2000"
+                            data-from="0"
+                            data-to="500"
+                            data-grid="true"
+                        />
+                      <input type="hidden" name="compare_type" value="price">
+                      <button class="btn btn-primary mb-2" type="submit">찾아보기</button>
+                  </form>
+              </div>
+            </div>
+        </section>
+        {% if not compare_type %}
+        <section>
+            <h2>비교하기 이용방법</h2>
+            <p>브랜드와 가격대별 특성을 알아보기 위해서 비교하기를 이용해보세요.</p>
+        </section>
+        {% elif compare_type == 'brand' %}
+        <section>
+            <h2>브랜드로 비교하기</h2>
+            <h3>장점 비교</h3>
+            <table>
+                <tr>
+                    {% for item in parameters %}
+                    <th>{{ item }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for item in parameters %}
+                    <td>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/22e54ad0-7487-11e9-b120-15fca0e6d9ee?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:brand,negate:!f,params:(query:{{ item }},type:phrase),type:phrase,value:{{ item }}),query:(match:(brand:(query:{{ item }},type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:15),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:brand_pros,type:tagcloud))" height="300" width="300" frameborder="0"></iframe>
+                    </td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <h3>단점 비교</h3>
+            <h3>평균 별점 비교</h3>
+            <h3>평균 가격 비교</h3>
+        </section>
+        {% elif compare_type == 'price' %}
+        <section>
+            <h2>가격대로 비교하기</h2>
+            <h3>장점 비교</h3>
+            <table>
+                <tr>
+                    {% for item in parameters %}
+                    <th>{{ item }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for parameter in parameters %}
+                    <td>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/d8b68ff0-748b-11e9-b120-15fca0e6d9ee?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:b34524c0-748b-11e9-b120-15fca0e6d9ee,key:price,negate:!f,params:(gte:{{ parameter[0] }},lt:{{ parameter[1] }}),type:range,value:'{{ parameter[0] }}+to+{{ parameter[1] }}'),range:(price:(gte:{{ parameter[0] }},lt:{{ parameter[1] }})))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:price_cons,type:tagcloud))" height="300" width="400" frameborder="0"></iframe>
+                    </td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <h3>단점 비교</h3>
+            <h3>평균 별점 비교</h3>
+            <h3>평균 가격 비교</h3>
+        </section>
+        {% endif %}
+    </div>
+
+{% endblock %}
