@@ -1,4 +1,4 @@
-from flask import (Blueprint, render_template, request, url_for, redirect)
+from flask import (Blueprint, render_template, request, url_for, redirect, jsonify)
 import pymysql
 
 bp = Blueprint('search', __name__, url_prefix='/search')
@@ -96,7 +96,6 @@ def compare():
     elif compare_type == 'price':
         parameters.append(request.args.get('first_range').split(';'))
         parameters.append(request.args.get('second_range').split(';'))
-        parameters.append(request.args.get('third_range').split(';'))
 
 
     connection = pymysql.connect(host='localhost',
@@ -115,3 +114,40 @@ def compare():
     finally:
         connection.close()
     return render_template('search/compare.html', brands=brands, compare_type=compare_type, parameters=parameters)
+
+@bp.route('/compare/process', methods=['post'])
+def compare_process():
+    if request.form['compare_type']:
+        compare_type = request.form['compare_type']
+    else:
+        compare_type = None
+
+    parameters = []
+
+    if compare_type == 'brand':
+        parameters.append(request.form['first_brand'])
+        parameters.append(request.form['second_brand'])
+        parameters.append(request.form['third_brand'])
+        parameters.append(request.form['forth_brand'])
+    elif compare_type == 'price':
+        parameters.append(request.form['first_range'].split(';'))
+        parameters.append(request.form['second_range'].split(';'))
+
+
+    connection = pymysql.connect(host='localhost',
+                                 user='erica',
+                                 password='hosugongwon',
+                                 db='notebook_db',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+
+    try:
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT DISTINCT `brand` FROM `product` WHERE `brand` != '' ORDER BY `brand` ASC"
+            cursor.execute(sql)
+            brands = cursor.fetchall()
+    finally:
+        connection.close()
+
+    return render_template('search/compare_result.html', compare_type=compare_type, parameters=parameters)

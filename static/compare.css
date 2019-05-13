@@ -1,0 +1,75 @@
+.nav-link{
+    color: black;
+}
+
+.nav-item{
+    border-radius: 25px 25px 25px 25px;
+    background-color: #E0E0E0;
+    margin: 1px;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link{
+    background-color: #424242;
+    border-radius: 25px 25px 25px 25px;
+    margin: 1px;
+}
+
+#compare_option_box{
+    overflow: hidden;
+    padding: 20px;
+    background-color: #ECEFF1;
+    border-radius: 20px 20px 20px 20px;
+}
+
+select{
+    margin: 20px;
+    width: calc(100% - 40px) !important;
+}
+
+.irs--flat.irs-with-grid{
+    margin: 20px;
+}
+
+button[type="submit"] {
+    margin: 5px;
+    padding: 10px;
+    float: right;
+    border-radius: 25px 25px 25px 25px;
+    background-color: #424242;
+    border: none;
+}
+
+button[type="submit"]:hover {
+    border-radius: 25px 25px 25px 25px;
+    background-color: #757575;
+    border: none;
+}
+
+.compare_result{
+    padding: 20px;
+}
+
+.compare_result h2{
+    margin: 20px 0 20px 0;
+}
+
+.compare_result h3{
+    color: white;
+    display: inline-block;
+    padding: 10px 30px 10px 30px;
+    background-color: #424242;
+    border-radius: 25px 25px 25px 25px;
+    margin: 10px 0 10px 10px;
+}
+
+.iframe_box{
+    margin: 5px;
+    display: inline-block;
+    border: 1px solid lightgray;
+}
+
+.iframe_box div:first-child{
+    padding: 5px;
+    border-bottom: 2px solid lightgray;
+    font-size: 24px;
+}

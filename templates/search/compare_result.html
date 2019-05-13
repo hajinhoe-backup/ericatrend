@@ -1,0 +1,37 @@
+        {% if compare_type == 'brand' %}
+        <section class="compare_result">
+            <h2>브랜드로 비교하기</h2>
+            <h3>장점 비교</h3>
+            <div>
+                {% for item in parameters %}
+                <div class="iframe_box">
+                    <div>{{ item }}</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/22e54ad0-7487-11e9-b120-15fca0e6d9ee?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:brand,negate:!f,params:(query:{{ item }},type:phrase),type:phrase,value:{{ item }}),query:(match:(brand:(query:{{ item }},type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:15),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:brand_pros,type:tagcloud))" height="500" width="600" frameborder="0"></iframe>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <h3>단점 비교</h3>
+            <h3>평균 별점 비교</h3>
+            <h3>평균 가격 비교</h3>
+        </section>
+        {% elif compare_type == 'price' %}
+        <section class="compare_result">
+            <h2>가격대로 비교하기</h2>
+            <h3>장점 비교</h3>
+            <div>
+                {% for item in parameters %}
+                <div class="iframe_box">
+                    <div>{{ item[0] }}부터 {{ item[1] }}까지</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/d8b68ff0-748b-11e9-b120-15fca0e6d9ee?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:b34524c0-748b-11e9-b120-15fca0e6d9ee,key:price,negate:!f,params:(gte:{{ item[0] }},lt:{{ item[1] }}),type:range,value:'{{ item[0] }}+to+{{ item[1] }}'),range:(price:(gte:{{ item[0] }},lt:{{ item[1] }})))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:price_cons,type:tagcloud))" height="500" width="600" frameborder="0"></iframe>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <h3>단점 비교</h3>
+            <h3>평균 별점 비교</h3>
+            <h3>평균 가격 비교</h3>
+        </section>
+        {% endif %}
