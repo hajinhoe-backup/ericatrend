@@ -35,46 +35,68 @@
                         <span>미북</span>
             </div>
         </section>
-        <section>
-            <h2>별점 그래프</h2>
-            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/81cbcad0-73cc-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:star,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:segment,type:terms)),params:(addLegend:!t,addTooltip:!t,isDonut:!f,labels:(last_level:!t,show:!t,truncate:100,values:!t),legendPosition:right,type:pie),title:start_chart,type:pie))" height="600" width="800" frameborder="0"></iframe>
-        </section>
-        <section id="helpful_review">
-            <h2>리뷰</h2>
+        <section class="result_box">
+            <h2>제품 상세 검색 결과</h2>
+            <h3>별점과 가격</h3>
             <div>
-                {% for review in reviews %}
-                <div class="card mb-12">
-                    <div class="row no-gutters">
-                        <div class="col-md-12">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ review['title'] }}
-                                    <span class="product_star">
-                                    {% for i in range(5) %}
-                                    {% if i < review['star'] %}
-                                    <i class="fas fa-star"></i>
-                                    {% else %}
-                                    <i class="far fa-star"></i>
-                                    {% endif %}
-                                    {% endfor %}
-                                    </span></h5>
-                                <p class="card-text">{{ review['pros'] }} {{ review['cons'] }}</p>
-                                <p class="card-text good_review"><i class="far fa-thumbs-up"></i> {{ review['helpful'] + review['unhelpful'] }}명 중 {{ review['helpful'] }}명이 추천한 리뷰</p>
+                <div class="iframe_box">
+                    <div>별점 그래프</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/81cbcad0-73cc-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:star,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:segment,type:terms)),params:(addLegend:!t,addTooltip:!t,isDonut:!f,labels:(last_level:!t,show:!t,truncate:100,values:!t),legendPosition:right,type:pie),title:start_chart,type:pie))" frameborder="0"></iframe>
+                    </div>
+                </div>
+                    <div class="iframe_box">
+                        <div>가격 동향</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/0688c910-73c5-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'5522f790-73c4-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(field:price),schema:metric,type:min),(enabled:!t,id:'2',params:(customInterval:'2h',drop_partials:!f,extended_bounds:(),field:date,interval:auto,min_doc_count:1,timeRange:(from:now-5y,mode:quick,to:now),time_zone:Asia%2FTokyo,useNormalizedEsInterval:!t),schema:segment,type:date_histogram)),params:(addLegend:!t,addTimeMarker:!t,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,style:(color:%23eee),valueAxis:ValueAxis-1),legendPosition:right,seriesParams:!((data:(id:'1',label:'Min+price'),drawLinesBetweenPoints:!t,interpolate:step-after,mode:normal,show:true,showCircles:!t,type:line,valueAxis:ValueAxis-1)),times:!(),type:line,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Min+price'),type:value))),title:price_graph,type:line))" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+            <h3>리뷰</h3>
+            <div id="helpful_review">
+                <div>
+                    {% for review in reviews %}
+                    <div class="card mb-12">
+                        <div class="row no-gutters">
+                            <div class="col-md-12">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ review['title'] }}
+                                        <span class="product_star">
+                                        {% for i in range(5) %}
+                                        {% if i < review['star'] %}
+                                        <i class="fas fa-star"></i>
+                                        {% else %}
+                                        <i class="far fa-star"></i>
+                                        {% endif %}
+                                        {% endfor %}
+                                        </span></h5>
+                                    <p class="card-text">{{ review['pros'] }} {{ review['cons'] }}</p>
+                                    <p class="card-text good_review"><i class="far fa-thumbs-up"></i> {{ review['helpful'] + review['unhelpful'] }}명 중 {{ review['helpful'] }}명이 추천한 리뷰</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+            <h3>워드 클라우드</h3>
+            <div>
+                <div class="iframe_box">
+                    <div>만족</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/fa772830-73c7-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(exclude:'i%7Cmy%7Cme%7Chave%7Chad%7Chas%7Cwhich%7Cwhat%7Cwhen%7Ccan%7Ccould%7Cshould%7Cit%7Cit!'s%7Cfrom%7Call%7Cone',field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:25),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:pros,type:tagcloud))" frameborder="0"></iframe>
+                    </div>
+                </div>
+                <div class="iframe_box">
+                    <div>불만</div>
+                    <div>
+                    <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/fec39ef0-73c7-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(exclude:'i%7Cmy%7Cme%7Chave%7Chad%7Chas%7Cwhich%7Cwhat%7Cwhen%7Ccan%7Ccould%7Cshould%7Cit%7Cit!'s%7Cfrom%7Call%7Cone',field:cons,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:25),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:cons,type:tagcloud))" frameborder="0"></iframe>
+                    </div>
+                </div>
             </div>
         </section>
-        <section>
-            <h2>워드 클라우드</h2>
-            <h3>긍정</h3>
-            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/fa772830-73c7-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(exclude:'i%7Cmy%7Cme%7Chave%7Chad%7Chas%7Cwhich%7Cwhat%7Cwhen%7Ccan%7Ccould%7Cshould%7Cit%7Cit!'s%7Cfrom%7Call%7Cone',field:pros,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:25),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:pros,type:tagcloud))" height="600" width="800" frameborder="0"></iframe>
-            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/fec39ef0-73c7-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-5y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'08b8b680-73c7-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(exclude:'i%7Cmy%7Cme%7Chave%7Chad%7Chas%7Cwhich%7Cwhat%7Cwhen%7Ccan%7Ccould%7Cshould%7Cit%7Cit!'s%7Cfrom%7Call%7Cone',field:cons,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:25),schema:segment,type:terms)),params:(maxFontSize:72,minFontSize:18,orientation:single,scale:linear,showLabel:!t),title:cons,type:tagcloud))" height="600" width="800" frameborder="0"></iframe>
-        </section>
-        <section>
-            <h2>가격 동향</h2>
-            <iframe src="http://www.ericatrend.net/kibana/app/kibana#/visualize/edit/0688c910-73c5-11e9-8aaa-4928aee881f7?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-1y,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'5522f790-73c4-11e9-8aaa-4928aee881f7',key:newegg_id,negate:!f,params:(query:'{{ product['newegg_id'] }}',type:phrase),type:phrase,value:'{{ product['newegg_id'] }}'),query:(match:(newegg_id:(query:'{{ product['newegg_id'] }}',type:phrase))))),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(field:price),schema:metric,type:min),(enabled:!t,id:'2',params:(customInterval:'2h',drop_partials:!f,extended_bounds:(),field:date,interval:auto,min_doc_count:1,timeRange:(from:now-5y,mode:quick,to:now),time_zone:Asia%2FTokyo,useNormalizedEsInterval:!t),schema:segment,type:date_histogram)),params:(addLegend:!t,addTimeMarker:!t,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,style:(color:%23eee),valueAxis:ValueAxis-1),legendPosition:right,seriesParams:!((data:(id:'1',label:'Min+price'),drawLinesBetweenPoints:!t,interpolate:step-after,mode:normal,show:true,showCircles:!t,type:line,valueAxis:ValueAxis-1)),times:!(),type:line,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Min+price'),type:value))),title:price_graph,type:line))" height="600" width="800" frameborder="0"></iframe>
-        </section>
+        <footer>
+            <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
+        </footer>
     </div>
 {% endblock %}
