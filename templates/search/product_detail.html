@@ -35,13 +35,15 @@
             </form>
         </header>
         <section>
-            <div class="alert alert-primary" role="alert">
-                          <span>이런 검색어는 어떠세요?</span>
-                        <span>그램</span>
-                        <span>스펙타</span>
-                        <span>xps</span>
-                        <span>미북</span>
-            </div>
+		{% if related_keyword and (related_keyword['top'] is defined) %}
+		<div>
+			<span>이런 검색어는 어떠세요?</span><br>
+			{% for i in related_keyword['top']['query'] %}
+			<span class="badge badge-info" style="cursor:pointer;" onclick="location.href='http://ericatrend.net:5000/search/search?search_words={{ i }}'">{{ i }}
+			</span>
+			{% endfor %}
+		</div>
+		{% endif %}
         </section>
         <section class="result_box">
             <h2>제품 상세 검색 결과</h2>

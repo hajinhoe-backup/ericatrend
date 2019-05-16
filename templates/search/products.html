@@ -25,6 +25,15 @@
             </form>
         </header>
         <section>
+		{% if related_keyword and (related_keyword['top'] is not none) %}
+		<div>
+			<span>이런 검색어는 어떠세요?</span><br>
+			{% for i in related_keyword['top']['query'] %}
+			<span class="badge badge-info" style="cursor:pointer;" onclick="location.href='http://ericatrend.net:5000/search/search?search_words={{ i }}'">{{ i }}
+			</span>
+			{% endfor %}
+		</div>
+		{% endif %}
             {% for item in products_info %}
                 <a href="{{ url_for('search.product_detail', newegg_id=item['newegg_id']) }}">
             <div class="card mb-12">

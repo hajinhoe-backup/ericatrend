@@ -1,4 +1,5 @@
 from flask import (Blueprint, render_template, request, url_for, redirect, jsonify)
+from pytrends.request import TrendReq
 import pymysql
 
 bp = Blueprint('search', __name__, url_prefix='/search')
@@ -15,13 +16,26 @@ def process():
             if not n == len(keywords) - 1:
                 sql += " or "
         return sql
+    def related_keyword(string):
+        try:
+            pytrend_session = TrendReq()
+            pytrend_session.build_payload(kw_list=[string])
+            related_keyword = pytrend_session.related_queries()
+        except KeyError as e: # 키워드가 입력되지 않은 경우
+            related_keyword[string]['top'] = None
+            related_keyword[string]['rising'] = None
+            return related_keyword[string]
+
+        return related_keyword[string]
 
     keyword = request.args.get('search_words')
     if 'page' in request.args.keys():
         page = int(request.args.get('page'))
     else:
         page = 1
-
+    print(keyword)
+    related_keyword = related_keyword(keyword)
+    print(related_keyword)
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
                                  user='erica',
@@ -42,12 +56,26 @@ def process():
     if len(result) == 1: # 검색결과가 하나만 있는 경우 바로 제품 상세 페이지로 간다.
         return product_detail(newegg_id=result[0]['newegg_id'])
     else: # 검색 결과가 여러개인 경우 제품 리스트로 간다.
-        return products(keyword, page, result)
+        return products(keyword, page, result, related_keyword)
 
     # 검색하여 하나만 일치하면  페이지, 두개 이상 일치하면 product_view page
 
 @bp.route('/detail', methods=['get'])
 def product_detail(newegg_id=None):
+    def related_keyword(string):
+        try:
+            pytrend_session = TrendReq()
+            pytrend_session.build_payload(kw_list=[string])
+            related_keyword = pytrend_session.related_queries()
+            print(related_keyword)
+        except KeyError as e: # 키워드가 입력되지 않은 경우
+            print('func_exception!')
+            related_keyword[string]['top'] = None
+            related_keyword[string]['rising'] = None
+            print(related_keyword[string])
+            return related_keyword[string]
+        return related_keyword[string]
+
     if not newegg_id: # 프로그램 순서상으로 자동으로 받아왔을 경우가 아닌 경우
         newegg_id = request.args.get('newegg_id')
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
@@ -69,7 +97,20 @@ def product_detail(newegg_id=None):
             reviews = cursor.fetchall()
     finally:
         connection.close()
-    return render_template('search/product_detail.html', product=result, reviews=reviews)
+
+    try:
+        print(result)
+        keyword = "".join([result['brand'], " ", result['model']]) 
+        print(keyword)
+        related_keyword = related_keyword(keyword)
+        print(related_keyword[keyword])
+    except KeyError as e:
+        print(e,'exception!')
+        if 'brand' not in result.keys(): related_keyword = related_keyword(result['brand'])
+        if 'model' not in result.keys(): related_keyword = related_keyword(result['model'])
+    print(related_keyword)
+
+    return render_template('search/product_detail.html', product=result, reviews=reviews, related_keyword=related_keyword)
 
 @bp.route('/detail/word_cloud', methods=['get'])
 def delayed_word_cloud():
@@ -77,8 +118,8 @@ def delayed_word_cloud():
     return render_template('search/delayed/word_cloud.html', newegg_id=newegg_id)
 
 @bp.route('/list', methods=('get', 'post'))
-def products(keyword, page, products_info):
-    return render_template('search/products.html', keyword=keyword, page=page, products_info=products_info)
+def products(keyword, page, products_info, related_keyword):
+    return render_template('search/products.html', keyword=keyword, page=page, products_info=products_info, related_keyword=related_keyword)
 
 @bp.route('/all_list', methods=('get', 'post'))
 def all_products():
