@@ -16,265 +16,230 @@
 {% block body %}
 <article id="webslides">
 	<section class="bg-white aligncenter slideInRight">
-			<h1>ERICA Trend</h1>
-			<form action="{{ url_for('search.process') }}" method="get">
-				<div id = "search_box" class="input-group mb-3">
-					<input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
-					<div class="input-group-append">
-						<button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
-					</div>
+		<h1>ERICA Trend</h1>
+		<form action="{{ url_for('search.process') }}" method="get">
+			<div id = "search_box" class="input-group mb-3">
+				<input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
 				</div>
-			</form>
-			<div id="tool_box">
-				<a href="{{ url_for('search.compare') }}"><i class="fas fa-crosshairs"></i> 비교 검색하기</a>
 			</div>
+		</form>
+		<div id="tool_box">
+			<a href="{{ url_for('search.compare') }}"><i class="fas fa-crosshairs"></i> 비교 검색하기</a>
+		</div>
 	</section>
 	<section class="bg-gradient-gray slideInRight">
 
-        <!-- .wrap = container 1200px -->
+		<!-- .wrap = container 1200px -->
 
-            <div class="wrap size-70">
+		<div class="wrap size-70">
 
-                <h2><strong>Scenario #1</strong></h2>
+			<h2><strong>Scenario #1</strong></h2>
 
-                <p>고객에게는 브랜드 / 가격대별 정보를 제공하여 제품 트렌드를 따라갈수 있도록, </p>
+			<p>고객에게는 브랜드 / 가격대별 정보를 제공하여 제품 트렌드를 따라갈수 있도록, </p>
 
-                <hr>
+			<hr>
 
-                <div class="bg-white shadow">
+			<div class="bg-white shadow">
 
-                    <ul class="flexblock reasons">
+				<ul class="flexblock reasons">
 
-                        <li>
+					<li>
 
-                            <h2>브랜드별 장단점을 제시합니다.</h2>
+						<h2>브랜드별 장단점을 제시합니다.</h2>
 
-                            <p>소비자가 제품에 대한 지식이 전무한 상태라면 어떤 노트북을 골라야하는지 어려움에 닥칠 것입니다.
+						<p>소비자가 제품에 대한 지식이 전무한 상태라면 어떤 노트북을 골라야하는지 어려움에 닥칠 것입니다.
 
-                            적어도 브랜드가 갖는 특성을 한 눈에 알 수만 있다면, 스스로가 원하는 그리고 트렌드를 따르는 제품을
+						적어도 브랜드가 갖는 특성을 한 눈에 알 수만 있다면, 스스로가 원하는 그리고 트렌드를 따르는 제품을
 
-                            찾을 수 있을 것입니다.</p>
+						찾을 수 있을 것입니다.</p>
 
-                        </li>
+					</li>
 
-                        <li>
+					<li>
 
-                            <h2>가격대별 장단점을 제시합니다.</h2>
+						<h2>가격대별 장단점을 제시합니다.</h2>
 
-                            <p>결국 성능과 직결되는 것은 가격입니다. 우리는 갖고있는 예산 안에서 분명 제품의 옵션과 타협을
+						<p>결국 성능과 직결되는 것은 가격입니다. 우리는 갖고있는 예산 안에서 분명 제품의 옵션과 타협을
 
-                            봐야하는데, 가격대 별로 갖는 특성을 한 눈에 볼 수 있다면 효율적으로 제품을 고를 수 있을 것입니다.</p>
+						봐야하는데, 가격대 별로 갖는 특성을 한 눈에 볼 수 있다면 효율적으로 제품을 고를 수 있을 것입니다.</p>
 
-                        </li>
+					</li>
 
-                    </ul>
+				</ul>
 
-                    <a href="/search/compare" class="button radius alignright" title="Button">기능 시연</a>
+				<a href="/search/compare" class="button radius alignright" title="Button">기능 시연</a>
 
-                    </div>
+			</div>
 
-            </div>
+		</div>
 
-        </section>
-	<section class="bg-light slideInRight">
+	</section>
+	<section class="fullscreen slideInRight">
+		<div class="card-50">
+			<img src="review.png">
+			<div class="flex-content">
+				<h2><strong>Scenario #2</strong></h2>
+				<p>제조사에게는 사용자 경험을 한 눈에 제공하여, 빠르고 정확한 피드백을</p>
+				<a href="#slide=5">
+					<h1>Without ERICA Trend</h1>
+				</a>
+				<hr>
+				<p>쇼핑몰 리뷰보고, 엑셀에 장/단점 정리하고, 홍보글 구분하고..</p>
+				<p><strong>물건 하나 사는데, 왜 이렇게 따질 건 많을까요?</strong></p>
+			</div>
+		</div>
 
-        <!-- .wrap = container 1200px -->
+	</section>
+	<section class="fullscreen slideInRight">
+		<div class="card-50">
+			<div class="flex-content">
+				<h2><strong>Scenario #2</strong></h2>
+				<p>제조사에게는 사용자 경험을 한 눈에 제공하여, 빠르고 정확한 피드백을</p>
+				<a href="#slide=4">
+					<h1>With ERICA Trend</h1>
+				</a>
+				<hr>
+				<p>이제 <strong>ERICATREND</strong>에서 제품명만 입력하세요.<br>리뷰 분석, 가격 동향, 별점분석, 한 번에 해드립니다.<br>
+				<strong>이제 물건을 사느라 당신의 소중한 시간을 낭비하지 마세요.</strong>
+				</p>
 
-            <div class="wrap alignleft">
+			</div>
+			<img src="kibana.png">
 
-                <h2><strong>Scenario #2</strong></h2>
+		</div>
 
-                <p>제조사에게는 사용자 경험을 한 눈에 제공하여, 빠르고 정확한 피드백을</p>
+	</section>
+	<section class="bg-light slideInRight slide-top">
 
-                <hr>
+		<!-- .wrap = container 1200px -->
 
-                <div class="wrap">
+		<div class="grid sm size-80">
 
-                    <div class="grid sm vertical-align">
+			<div class="column">
 
-                        <div class="column alignleft">
+				<h2><strong>Scenario #2 </strong></h2>
 
-                            <a href="#slide=4" style="text-decoration:none;">
+				<h2>Without<br>ERICA Trend</h2>
 
-                                <h1>Without<br>ERICA Trend</h1>
+				<p>I Don't Wanna Do This All Day..</p>
 
-                            </a>
+			</div>
 
-                        </div>
+			<div class="column">
 
-                        <div class="column">
+				<ul class="work">
 
-                            <p>사람의 손이 직접 닿는 모든 것에는 결국 그 사람의 주관이 스며들기 마련입니다. 정확한 데이터인지 신뢰하기
+					<li class="work-label">
 
-                                어렵고, 느립니다. 수작업으로 제품에 대한, 브랜드에 대한 장/단점을 찾는 것이 쉬울까요? 만약, 제품이 수십가지라면?
+						<p class="work-title">Product</p>
 
-                            </p>
+						<p class="work-client">Pros</p>
 
-                        </div>
+						<p class="work-client">Cons</p>
 
-                    </div>
+						<p class="work-date">Date</p>
 
-                </div>
+					</li>
 
-                <div class="wrap">
+					<li>
 
-                    <div class="grid sm vertical-align">
+						<a href="#" rel="external">
 
-                        <div class="column alignleft">
+							<p class="work-title">GIGABYTE</p>
 
-                            <a href="/search/detail?newegg_id=34-233-237" style="text-decoration:none;">
+							<p class="work-client">Battery, Screen, Keyboard..?</p>
 
-                                <h1>With<br>ERICA Trend</h1>
+							<p class="work-client">Cam Angle</p>
 
-                            </a>
+							<p class="work-date">190605</p>
 
-                        </div>
+						</a>
 
-                        <div class="column">
+					</li>
 
-                            <p>ERICA Trend는 불과 몇 초안에 제품의 특성이 무엇인지 제시해줄 수 있습니다. 제품을 사용했던 고객들이 어떤
+					<li>
 
-                            단어를 가장 많이 언급했는지, 가격 동향은 어땠는지, 리뷰에 대한 분석까지.</p>
+						<a href="#" rel="external">
 
-                        </div>
+							<p class="work-title">MSI</p>
 
-                    </div>
+							<p class="work-client">High Performance</p>
 
-                </div>
+							<p class="work-client">WiFi..?</p>
 
-            </div>
+							<p class="work-date">190603</p>
 
-        </section>
+						</a>
 
-        <section class="bg-light slideInRight slide-top">
+					</li><li>
 
-        <!-- .wrap = container 1200px -->
+						<a href="#" rel="external">
 
-            <div class="grid sm size-80">
+							<p class="work-title">Asus ZenBook14</p>
 
-                <div class="column">
+							<p class="work-client">Light Weight, High Performance</p>
 
-                    <h2><strong>Scenario #2 </strong></h2>
+							<p class="work-client">Cooling</p>
 
-                    <h2>Without<br>ERICA Trend</h2>
+							<p class="work-date">190602</p>
 
-                    <p>I Don't Wanna Do This All Day..</p>
+						</a>
 
-                </div>
+					</li><li>
 
-                <div class="column">
+						<a href="#" rel="external">
 
-                    <ul class="work">
+							<p class="work-title">GIGABYTE</p>
 
-                        <li class="work-label">
+							<p class="work-client">Battery, Screen, Keyboard..?</p>
 
-                            <p class="work-title">Product</p>
+							<p class="work-client">Cam Angle</p>
 
-                            <p class="work-client">Pros</p>
+							<p class="work-date">190605</p>
 
-                            <p class="work-client">Cons</p>
+						</a>
 
-                            <p class="work-date">Date</p>
+					</li><li>
 
-                        </li>
+						<a href="#" rel="external">
 
-                        <li>
+							<p class="work-title">Lenovo G50-45</p>
 
-                            <a href="#" rel="external">
+							<p class="work-client">..?</p>
 
-                                <p class="work-title">GIGABYTE</p>
+							<p class="work-client">Keyboard</p>
 
-                                <p class="work-client">Battery, Screen, Keyboard..?</p>
+							<p class="work-date">190601</p>
 
-                                <p class="work-client">Cam Angle</p>
+						</a>
 
-                                <p class="work-date">190605</p>
+					</li><li>
 
-                            </a>
+						<a href="#" rel="external">
 
-                        </li>
+							<p class="work-title">Lenovo Y50</p>
 
-                        <li>
+							<p class="work-client">Keyboard</p>
 
-                            <a href="#" rel="external">
+							<p class="work-client">Slow HDD</p>
 
-                                <p class="work-title">MSI</p>
+							<p class="work-date">190531</p>
 
-                                <p class="work-client">High Performance</p>
+						</a>
 
-                                <p class="work-client">WiFi..?</p>
+					</li>
 
-                                <p class="work-date">190603</p>
+				</ul>
 
-                            </a>
+			</div>
 
-                        </li><li>
 
-                            <a href="#" rel="external">
 
-                                <p class="work-title">Asus ZenBook14</p>
+		</div>
 
-                                <p class="work-client">Light Weight, High Performance</p>
-
-                                <p class="work-client">Cooling</p>
-
-                                <p class="work-date">190602</p>
-
-                            </a>
-
-                        </li><li>
-
-                            <a href="#" rel="external">
-
-                                <p class="work-title">GIGABYTE</p>
-
-                                <p class="work-client">Battery, Screen, Keyboard..?</p>
-
-                                <p class="work-client">Cam Angle</p>
-
-                                <p class="work-date">190605</p>
-
-                            </a>
-
-                        </li><li>
-
-                            <a href="#" rel="external">
-
-                                <p class="work-title">Lenovo G50-45</p>
-
-                                <p class="work-client">..?</p>
-
-                                <p class="work-client">Keyboard</p>
-
-                                <p class="work-date">190601</p>
-
-                            </a>
-
-                        </li><li>
-
-                            <a href="#" rel="external">
-
-                                <p class="work-title">Lenovo Y50</p>
-
-                                <p class="work-client">Keyboard</p>
-
-                                <p class="work-client">Slow HDD</p>
-
-                                <p class="work-date">190531</p>
-
-                            </a>
-
-                        </li>
-
-                    </ul>
-
-                </div>
-
-
-
-            </div>
-
-        </section>
+	</section>
 </article>
 <script>
 	window.ws = new WebSlides();
