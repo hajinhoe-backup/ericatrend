@@ -33,7 +33,7 @@ def process():
     try:
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT `newegg_id`, `brand`, `model` FROM `product` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
+            sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
             cursor.execute(sql)
             result = cursor.fetchall()
     finally:
@@ -61,7 +61,7 @@ def product_detail(newegg_id=None):
     try:
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT `newegg_id`, `brand`, `model` FROM `product` WHERE `newegg_id` = %s"
+            sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE `newegg_id` = %s"
             cursor.execute(sql, (newegg_id, ))
             result = cursor.fetchone()
             sql = "SELECT `title`, `date`, `pros`, `cons`, `star`, `helpful`, `unhelpful` FROM `review` WHERE `newegg_id`= %s ORDER BY `date` LIMIT 10"
@@ -70,6 +70,11 @@ def product_detail(newegg_id=None):
     finally:
         connection.close()
     return render_template('search/product_detail.html', product=result, reviews=reviews)
+
+@bp.route('/detail/word_cloud', methods=['get'])
+def delayed_word_cloud():
+    newegg_id = request.args.get('newegg_id')
+    return render_template('search/delayed/word_cloud.html', newegg_id=newegg_id)
 
 @bp.route('/list', methods=('get', 'post'))
 def products(keyword, page, products_info):
@@ -108,7 +113,7 @@ def compare():
     try:
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT DISTINCT `brand` FROM `product` WHERE `brand` != '' ORDER BY `brand` ASC"
+            sql = "SELECT DISTINCT `brand` FROM `for_presentation_products` WHERE `brand` != '' ORDER BY `brand` ASC"
             cursor.execute(sql)
             brands = cursor.fetchall()
     finally:
@@ -144,7 +149,7 @@ def compare_process():
     try:
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT DISTINCT `brand` FROM `product` WHERE `brand` != '' ORDER BY `brand` ASC"
+            sql = "SELECT DISTINCT `brand` FROM `for_presentation_products` WHERE `brand` != '' ORDER BY `brand` ASC"
             cursor.execute(sql)
             brands = cursor.fetchall()
     finally:
