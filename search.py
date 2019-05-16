@@ -33,9 +33,9 @@ def process():
         page = int(request.args.get('page'))
     else:
         page = 1
-    print(keyword)
+
     related_keyword = related_keyword(keyword)
-    print(related_keyword)
+
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
     connection = pymysql.connect(host='localhost',
                                  user='erica',
@@ -99,16 +99,11 @@ def product_detail(newegg_id=None):
         connection.close()
 
     try:
-        print(result)
         keyword = "".join([result['brand'], " ", result['model']]) 
-        print(keyword)
         related_keyword = related_keyword(keyword)
-        print(related_keyword[keyword])
     except KeyError as e:
-        print(e,'exception!')
         if 'brand' not in result.keys(): related_keyword = related_keyword(result['brand'])
         if 'model' not in result.keys(): related_keyword = related_keyword(result['model'])
-    print(related_keyword)
 
     return render_template('search/product_detail.html', product=result, reviews=reviews, related_keyword=related_keyword)
 
