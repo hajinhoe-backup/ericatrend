@@ -1,4 +1,4 @@
-	    <div>
+	    <div id="suggestions">
 			<span>이런 검색어는 어떠세요?</span><br>
 			{% for i in related_keyword %}
             <a href="{{ url_for('search.process', search_words=i) }}">

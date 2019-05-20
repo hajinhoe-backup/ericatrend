@@ -21,6 +21,11 @@
     </script>
     <script>
     $(document).ready(function() {
+        /*
+        var a;
+        a.load('{{ url_for('search.compare_process') }}', $(".search_form"));
+        console.log(a);
+        */
         $(".search_form").submit(function (event) {
             event.preventDefault();
             var send_url = $(this).attr("action");
@@ -28,8 +33,27 @@
 
             $.post(send_url, send_data)
                 .done(function (data, status) {
-                    $("#result").hide().html(data).fadeIn('slow');
-                })
+                    $("#result").empty();
+                    var html_dom  = new DOMParser().parseFromString(data, 'text/html');
+                    $("#result").hide().append("<div id=\"result_box\"></div>").fadeIn('slow');
+                    var items = html_dom.body.firstElementChild.children;
+
+                    var interval_max = parseInt(String((items.length - 3) / 2));
+                    var interval_n = 0;
+
+                    //최초
+                    var draw_element = items[0].outerHTML + items[1].outerHTML + items[2].outerHTML;
+                    $(document.getElementById('result_box')).append(draw_element);
+
+                    var intervalid = setInterval(function () {
+                        draw_element = items[(interval_n*2) + 3].outerHTML + items[(interval_n*2) + 4].outerHTML;
+                        $(document.getElementById('result_box')).append(draw_element);
+                        interval_n++;
+                        if(interval_n == interval_max){
+                            clearInterval(intervalid);
+                        }
+                    }, 10000);
+                });
         });
     });
     </script>
@@ -64,7 +88,7 @@
             <div class="tab-content" id="pills-tabContent">
               <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                 <p>브랜드를 4개 선택할 수 있습니다.</p>
-                <form class="search_form" action="{{ url_for('search.compare_process') }}">
+                <form class="search_form" action="{{ url_for('search.compare_process') }}" method="post">
                     <select class="form-control" id="first_brand" name="first_brand">
                         {% for brand in brands %}
                             <option>{{ brand['brand'] }}</option>
@@ -118,6 +142,9 @@
             <h2>비교하기 이용방법</h2>
             <p>브랜드와 가격대별 특성을 알아보기 위해서 비교하기를 이용해보세요. 검색 결과가 이곳에 표시됩니다.</p>
         </section>
+        <footer>
+            <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
+        </footer>
     </div>
 
 {% endblock %}
