@@ -28,17 +28,20 @@ import pricetocsv
 class Newegg_Crawler:
 
     def __init__(self):
-        #firefox_addon = u'/home/ubuntu/.mozilla/firefox/18qqhqet.default/extensions/{cde47992-8aa7-4206-9e98-680a2d20f798}.xpi'
         firefox_profile = webdriver.FirefoxProfile()
-        # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0')
         # os.environ["MOZ_HEADLESS"] = '1'
+<<<<<<< HEAD
         #firefox_profile.set_preference("network.proxy.type", 1)
         #firefox_profile.set_preference("network.proxy.socks", "127.0.0.1")
         #firefox_profile.set_preference("network.proxy.socks_port", 9050)
         #firefox_profile.add_extension(firefox_addon)
         self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
         #self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
+=======
+        #self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
+        self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
+>>>>>>> 81fa4958877277c27c201ad91b171b75221c6bac
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
         self.worse_case = False
@@ -46,8 +49,6 @@ class Newegg_Crawler:
     def feed_url(self, url):
         url = url + '?Order=REVIEWS&PageSize=96'
         self.driver.get(url)
-        #time.sleep(5)
-        #self.driver.refresh()
 
     def driver_beautifulfy(self):
         html = self.driver.page_source
@@ -187,7 +188,10 @@ class Newegg_Crawler:
             wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
 
         total_review = 0
+<<<<<<< HEAD
         print('IMG Downloading...')
+=======
+>>>>>>> 81fa4958877277c27c201ad91b171b75221c6bac
         print('https:'+product_imgsrc)
         try:
             if not os.path.exists(os.path.join('data/img/{0}'.format(str(page_number)))):
@@ -197,7 +201,11 @@ class Newegg_Crawler:
             else:
                 urlretrieve('https:'+product_imgsrc,'data/img/{0}/{1}.png'.format(str(page_number),product_id))
         except (HTTPError, OSError):
+<<<<<<< HEAD
             print('img download rejected.. skip')
+=======
+            print("Image Download Rejected. Skip..")
+>>>>>>> 81fa4958877277c27c201ad91b171b75221c6bac
             pass
 
         while True:
