@@ -37,13 +37,14 @@ class Newegg_Crawler:
         #firefox_profile.set_preference("network.proxy.socks", "127.0.0.1")
         #firefox_profile.set_preference("network.proxy.socks_port", 9050)
         #firefox_profile.add_extension(firefox_addon)
-        #self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
-        self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
+        self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
+        #self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
         self.reviewcsv_exist = False
         self.worse_case = False
 
     def feed_url(self, url):
+        url = url + '?Order=REVIEWS&PageSize=96'
         self.driver.get(url)
         #time.sleep(5)
         #self.driver.refresh()
@@ -127,7 +128,7 @@ class Newegg_Crawler:
         for data in model_html:
             model_dict[data.contents[0].string] = data.contents[1].string
 
-        if len(product_page[1]) == 2:
+        if len(product_page) == 2:
             model_info = product_page[1].find_all('dl')  # quick 인포 부분, 노트북 제품군에만 있음
             for data in model_info:
                 if data.contents[0].string == 'Dimensions (W x D x H)':
@@ -135,7 +136,7 @@ class Newegg_Crawler:
                 else:
                     model_dict[data.contents[0].string] = data.contents[1].string
 
-        model_dict['Title'] = product_title
+        model_dict['Title'] = product_title.get_text(strip=True)
 
         if not self.pricecsv_exist:
             make_csv.create_csv(page_number)
@@ -186,7 +187,6 @@ class Newegg_Crawler:
             wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
 
         total_review = 0
-        ''' Skip crawling IMG
         print('IMG Downloading...')
         print('https:'+product_imgsrc)
         try:
@@ -196,13 +196,9 @@ class Newegg_Crawler:
 
             else:
                 urlretrieve('https:'+product_imgsrc,'data/img/{0}/{1}.png'.format(str(page_number),product_id))
-        except OSError:
-            urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
-        except HTTPError:
-            print('img download rejected.. retry after 15secs')
-            time.sleep(15)
-            urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
-        '''
+        except (HTTPError, OSError):
+            print('img download rejected.. skip')
+            pass
 
         while True:
             try:
@@ -345,9 +341,9 @@ def retry_msg(error):
 
 
 def main():
-    page_url = 'https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740&Page='
+    page_url = 'https://www.newegg.com/Laptops-Notebooks-Laptops-Notebooks/SubCategory/ID-32/Page-'
     crawler = Newegg_Crawler()
-    for page_number in range(10, 101): # 제품 카테고리 페이지
+    for page_number in range(1, 101): # 제품 카테고리 페이지
         product_index = 0 
         make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))
@@ -360,9 +356,11 @@ def main():
             if product_index != 0:
                 time.sleep(random.randint(0, 2) * 60) # 차단 방지를 위한 임의시간 대기 2
             titles = crawler.list_crawler()
-            if not titles:
+            if not titles or not (len(titles) == 116 or len(titles) == 96):
                 retry_msg('Product list page is not loaded..')
+
                 crawler.driver.back()
+
                 continue
 
             print(crawler.worse_case, ' | ', product_index, '/', len(titles))
@@ -373,6 +371,7 @@ def main():
 
             if (not product_imgsrc) or (not product_id) or (not spec_tab):  # 이미지 소스, 제품 아이디, 스펙 탭 한가지라도 없는 경우
                 retry_msg('Image Crawling is incomplete..')
+                product_index += 1
                 continue
 
             crawler.action_chaining(spec_tab)
@@ -387,7 +386,12 @@ def main():
             crawler.action_chaining(review_tab)
             crawler.review_crawler(model_dict, product_imgsrc, product_id, page_number)
             time.sleep(5)
-            crawler.driver.back()
+            try:
+                crawler.driver.back()
+            except TimeoutException as e:
+                time.sleep(10)
+                product_index += 1
+                crawler.driver.back()
             product_index += 1
         crawler.pricecsv_exist = False
     crawler.driver.quit()
