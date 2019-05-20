@@ -28,15 +28,9 @@ import pricetocsv
 class Newegg_Crawler:
 
     def __init__(self):
-        #firefox_addon = u'/home/ubuntu/.mozilla/firefox/18qqhqet.default/extensions/{cde47992-8aa7-4206-9e98-680a2d20f798}.xpi'
         firefox_profile = webdriver.FirefoxProfile()
-        # firefox_profile.set_preference("intl.accept_languages", 'en,en-US');
         firefox_profile.set_preference('general.useragent.override', 'Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0')
         # os.environ["MOZ_HEADLESS"] = '1'
-        #firefox_profile.set_preference("network.proxy.type", 1)
-        #firefox_profile.set_preference("network.proxy.socks", "127.0.0.1")
-        #firefox_profile.set_preference("network.proxy.socks_port", 9050)
-        #firefox_profile.add_extension(firefox_addon)
         #self.driver = webdriver.Firefox(executable_path="./geckodriver", firefox_profile=firefox_profile)
         self.driver = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=firefox_profile)
         self.pricecsv_exist = False
@@ -45,8 +39,6 @@ class Newegg_Crawler:
 
     def feed_url(self, url):
         self.driver.get(url)
-        #time.sleep(5)
-        #self.driver.refresh()
 
     def driver_beautifulfy(self):
         html = self.driver.page_source
@@ -186,8 +178,6 @@ class Newegg_Crawler:
             wr = csv.writer(ri, delimiter='`', quotechar='"', quoting=csv.QUOTE_ALL)
 
         total_review = 0
-        ''' Skip crawling IMG
-        print('IMG Downloading...')
         print('https:'+product_imgsrc)
         try:
             if not os.path.exists(os.path.join('data/img/{0}'.format(str(page_number)))):
@@ -196,13 +186,9 @@ class Newegg_Crawler:
 
             else:
                 urlretrieve('https:'+product_imgsrc,'data/img/{0}/{1}.png'.format(str(page_number),product_id))
-        except OSError:
-            urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
-        except HTTPError:
-            print('img download rejected.. retry after 15secs')
-            time.sleep(15)
-            urlretrieve('https:'+product_imgsrc,'data/img/{0}.png'.format(product_id))
-        '''
+        except (HTTPError, OSError):
+            print("Image Download Rejected. Skip..")
+            pass
 
         while True:
             try:
@@ -347,7 +333,7 @@ def retry_msg(error):
 def main():
     page_url = 'https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32?Tid=6740&Page='
     crawler = Newegg_Crawler()
-    for page_number in range(10, 101): # 제품 카테고리 페이지
+    for page_number in range(1, 101): # 제품 카테고리 페이지
         product_index = 0 
         make_csv = pricetocsv.PriceToCSV()
         crawler.feed_url(page_url + str(page_number))
@@ -373,6 +359,7 @@ def main():
 
             if (not product_imgsrc) or (not product_id) or (not spec_tab):  # 이미지 소스, 제품 아이디, 스펙 탭 한가지라도 없는 경우
                 retry_msg('Image Crawling is incomplete..')
+                product_index += 1
                 continue
 
             crawler.action_chaining(spec_tab)
