@@ -39,6 +39,9 @@ section .card{
     margin-bottom: 10px;
     border-radius: 20px;
 }
+.card-img{
+	padding: 5px;
+}
 
 #page_nav{
     text-align: center;
