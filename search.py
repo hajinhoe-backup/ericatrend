@@ -1,6 +1,7 @@
-from flask import (Blueprint, render_template, request, url_for, redirect, jsonify)
+from flask import (Blueprint, render_template, request, url_for, send_file)
 from pytrends.request import TrendReq
 import pymysql
+import os
 
 bp = Blueprint('search', __name__, url_prefix='/search')
 
@@ -198,3 +199,10 @@ def compare_process():
         connection.close()
 
     return render_template('search/compare_result.html', compare_type=compare_type, parameters=parameters)
+
+@bp.route('/images/<path:image_name>') # 이미지 라우팅
+def get_image(image_name):
+    if os.path.exists('static/images/'+image_name):
+        return send_file('static/images/'+image_name)
+    else:
+        return send_file('static/images/no_image_avail.png')

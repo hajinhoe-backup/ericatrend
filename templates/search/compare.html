@@ -45,12 +45,15 @@
                     var draw_element = items[0].outerHTML + items[1].outerHTML + items[2].outerHTML;
                     $(document.getElementById('result_box')).append(draw_element);
 
+                    $("#loading").show();
+
                     var intervalid = setInterval(function () {
                         draw_element = items[(interval_n*2) + 3].outerHTML + items[(interval_n*2) + 4].outerHTML;
                         $(document.getElementById('result_box')).append(draw_element);
                         interval_n++;
                         if(interval_n == interval_max){
                             clearInterval(intervalid);
+                            $("#loading").hide();
                         }
                     }, 10000);
                 });
@@ -141,6 +144,20 @@
         <section id="result">
             <h2>비교하기 이용방법</h2>
             <p>브랜드와 가격대별 특성을 알아보기 위해서 비교하기를 이용해보세요. 검색 결과가 이곳에 표시됩니다.</p>
+        </section>
+        <section id="loading" style="display: none">
+            <div class="row" style="width: 300px; margin: 20px auto 20px auto;">
+                <div class="col-3 p-0" style="text-align: center;">
+                    <div class="spinner-grow" style="display: inline-block; width: 3rem; height: 3rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div class="d-flex col-9 p-0">
+                    <span class="align-self-center">
+                        데이터를 불러오는 중이예요.
+                    </span>
+                </div>
+            </div>
         </section>
         <footer>
             <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>

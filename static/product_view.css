@@ -38,6 +38,7 @@ header #search_box .input-group-append button{
 section .card{
     margin-bottom: 10px;
     border-radius: 20px;
+    overflow: hidden;
 }
 
 #page_nav{
