@@ -41,6 +41,11 @@ section .card{
     overflow: hidden;
 }
 
+section .card img{
+    width: 100%;
+    height: 100%;
+}
+
 #page_nav{
     text-align: center;
 }

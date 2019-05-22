@@ -34,19 +34,25 @@ def process():
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
 
-    try:
-        with connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
-            cursor.execute(sql)
-            result = cursor.fetchall()
-    finally:
-        connection.close()
+    with connection.cursor() as cursor:
+        # Read a single record
+        sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
+        cursor.execute(sql)
+        result = cursor.fetchall()
 
-    if len(result) == 1: # 검색결과가 하나만 있는 경우 바로 제품 상세 페이지로 간다.
+    if len(result) == 1 and page == 1: # 검색결과가 하나만 있는 경우 바로 제품 상세 페이지로 간다.
+        connection.close()
         return product_detail(newegg_id=result[0]['newegg_id'])
     else: # 검색 결과가 여러개인 경우 제품 리스트로 간다.
-        return products(keyword, page, result)
+        try:
+            with connection.cursor() as cursor:
+                # Read a single record
+                sql = "SELECT count(*) FROM `for_presentation_products` WHERE " + generate_sql(keyword)
+                cursor.execute(sql)
+                number_of_product = cursor.fetchone()['count(*)']
+        finally:
+            connection.close()
+        return products(keyword, page, number_of_product, result)
 
     # 검색하여 하나만 일치하면  페이지, 두개 이상 일치하면 product_view page
 
@@ -120,8 +126,23 @@ def delayed_word_cloud():
     return render_template('search/delayed/word_cloud.html', newegg_id=newegg_id)
 
 @bp.route('/list', methods=('get', 'post'))
-def products(keyword, page, products_info):
-    return render_template('search/products.html', keyword=keyword, page=page, products_info=products_info)
+def products(keyword, now_page, number_of_product, products_info):
+    last_page = number_of_product/10
+
+    # 숫자를 올림 처리합니다.
+    if int(last_page) == last_page:
+        last_page = int(last_page)
+    else:
+        last_page = int(last_page) + 1
+    # 화면에 표시할 페이지 리스트를 생성합니다. 앞에 두개, 현재 페이지, 뒤에 두개로 나타내며,
+    # 앞에가 부족하면 뒤에 그만큼, 뒤에가 부족하면 앞에 그만큼 표시합니다.
+    if now_page < 3:
+        pages = [i for i in range(1, min(6, last_page + 1))]
+    elif now_page > last_page - 3:
+        pages = [i for i in range(now_page - 2, min(last_page + 1, now_page + 3))]
+    else:
+        pages = [i for i in range(now_page - 2, now_page + 3)]
+    return render_template('search/products.html', keyword=keyword, last_page=last_page, pages=pages, now_page=now_page, products_info=products_info)
 
 @bp.route('/all_list', methods=('get', 'post'))
 def all_products():
