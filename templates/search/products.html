@@ -6,7 +6,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="../../static/product_view.css">
-    {% if page == 1 %}
+    {% if now_page == 1 %}
     <script>
     $(document).ready(function() {
         $("#related_keywords").hide().load('{{ url_for('search.get_related_queries', keyword=keyword) }}', function() {
