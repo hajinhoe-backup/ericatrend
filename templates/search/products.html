@@ -51,7 +51,7 @@
                                 <p class="card-text">브랜드 : {{ item['brand'] }}</p>
                                 <div class="product_spec">
                                 {% for info in item %}
-                                    {% if item[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
+                                    {% if item[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight', 'price']%}
                                         <span>{{ item[info] }}</span>
                                     {% endif %}
                                 {% endfor %}

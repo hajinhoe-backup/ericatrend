@@ -38,6 +38,14 @@
         </header>
         <section id="result_box">
             <h2>제품 상세 검색 결과</h2>
+                <h3>기기의 사양</h3>
+                <div class="product_spec">
+                {% for info in product %}
+                    {% if product[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
+                        <span>{{ product[info] }}</span>
+                    {% endif %}
+                {% endfor %}
+                </div>
             <div id="stars_and_price">
                 <h3>별점과 가격</h3>
                 <div>

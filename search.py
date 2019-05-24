@@ -14,9 +14,9 @@ def process():
         keywords = string.split()
         sql = ''
         for n in range(len(keywords)):
-            sql += '`brand` LIKE "%{0}%" or `model` LIKE "%{0}%"'.format(keywords[n])
+            sql += '(`brand` LIKE "%{0}%" or `model` LIKE "%{0}%")'.format(keywords[n])
             if not n == len(keywords) - 1:
-                sql += " or "
+                sql += " and "
         return sql
 
 
@@ -55,10 +55,12 @@ def process():
             connection.close()
         expression = re.compile('\d+\.?\d*')
         for item in result:
+            if item['price']:
+                item['price'] = '{:0.0f} 달러'.format(item['price'])
             if item['weight']:
-                value = expression.match(item['weight'])[0]
+                value = expression.match(item['weight'])
                 if value:
-                    item['weight'] = '{:0.2f}kg'.format(float(value)*0.453592)
+                    item['weight'] = '{:0.2f}kg'.format(float(value[0])*0.453592)
         return products(keyword, page, number_of_product, result)
 
     # 검색하여 하나만 일치하면  페이지, 두개 이상 일치하면 product_view page
@@ -74,7 +76,7 @@ def get_related_queries():
             raise KeyError
 
     except KeyError as e: # 키워드가 입력되지 않은 경우
-        return None
+        return ''
 
     return render_template('search/delayed/related_keywords.html', related_keyword=related_keyword[string]['top']['query'])
 
@@ -87,12 +89,9 @@ def product_detail(newegg_id=None):
             pytrend_session = TrendReq()
             pytrend_session.build_payload(kw_list=[string])
             related_keyword = pytrend_session.related_queries()
-            print(related_keyword)
         except KeyError as e: # 키워드가 입력되지 않은 경우
-            print('func_exception!')
             related_keyword[string]['top'] = None
             related_keyword[string]['rising'] = None
-            print(related_keyword[string])
             return related_keyword[string]
         return related_keyword[string]
 
@@ -109,7 +108,7 @@ def product_detail(newegg_id=None):
     try:
         with connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE `newegg_id` = %s"
+            sql = "SELECT * FROM `for_presentation_products` WHERE `newegg_id` = %s"
             cursor.execute(sql, (newegg_id, ))
             result = cursor.fetchone()
             sql = "SELECT `title`, `date`, `pros`, `cons`, `star`, `helpful`, `unhelpful` FROM `review` WHERE `newegg_id`= %s ORDER BY `date` LIMIT 10"
@@ -124,6 +123,12 @@ def product_detail(newegg_id=None):
     except KeyError as e:
         if 'brand' not in result.keys(): related_keyword = related_keyword(result['brand'])
         if 'model' not in result.keys(): related_keyword = related_keyword(result['model'])
+
+    expression = re.compile('\d+\.?\d*')
+    if result['weight']:
+        value = expression.match(result['weight'])
+        if value:
+            result['weight'] = '{:0.2f}kg'.format(float(value[0]) * 0.453592)
 
     return render_template('search/product_detail.html', product=result, reviews=reviews, related_keyword=related_keyword)
 
