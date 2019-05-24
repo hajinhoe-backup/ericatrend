@@ -1,3 +1,24 @@
+* { font-family: 'Noto Sans KR', sans-serif; }
+
+.navbar {
+    background-color: #5C6BC0;
+    height: 70px;
+}
+
+#compare_nav h3 a {
+    color: white;
+    text-decoration: none;
+}
+
+#button-addon2 {
+    border-color: #adb5bd;
+    color: white;
+}
+
+#generate_alert:hover + .alert-danger {
+    display: block;
+}
+
 .nav-link{
     color: black;
 }
@@ -12,6 +33,11 @@
     background-color: #1A237E;
     border-radius: 25px 25px 25px 25px;
     margin: 1px;
+}
+
+#search_box {
+    color: white;
+    margin-top: 3%;
 }
 
 #compare_option_box{

@@ -28,4 +28,5 @@ def create_app(test_config=None):
     app.register_blueprint(main.bp)
     app.register_blueprint(search.bp)
 
+
     return app

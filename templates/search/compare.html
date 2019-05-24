@@ -7,7 +7,6 @@
 {% block head %}
     <link rel="stylesheet" href="../../static/product_view.css">
     <link rel="stylesheet" href="../../static/compare.css">
-
     <!--Plugin CSS file with desired skin-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css"/>
 
@@ -60,17 +59,14 @@
         });
     });
     </script>
+
 {% endblock %}
 
 {% block body %}
-    <div id = "contents">
-
-        <nav>
-            <a href="{{ url_for('main.main') }}">메인 화면</a>
-        </nav>
-        <header>
-            <h1>트랜드 검색 : 비교하기</h1>
-            <form action="{{ url_for('search.process') }}" method="get">
+        <nav class="navbar navbar-fixed-top" id="compare_nav">
+            <div class="container">
+                <h3><a href="{{ url_for('main.main') }}">ERICA TREND</a></h3>
+                <form action="{{ url_for('search.process') }}" method="get">
             <div id = "search_box" class="input-group mb-3">
                 <input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
                 <div class="input-group-append">
@@ -78,6 +74,24 @@
                 </div>
             </div>
             </form>
+            </div>
+
+        </nav>
+    <div id = "contents">
+
+
+        <header>
+            <h1>트렌드 검색 : 비교하기 <a id="generate_alert" class="far fa-sm fa-question-circle" style="color:grey;"></a></h1>
+            <div class="alert alert-info" style="display: none;" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Error:</span>
+              브랜드와 가격대별 특성을 알아보기 위해서 비교하기를 이용해보세요. 검색 결과가 선택창 아래에 표시됩니다.
+            </div>
+            <script>
+                $('#generate_alert').mouseover(function () {
+                    $('.alert').fadeIn();
+                })
+            </script>
         </header>
         <section id="compare_option_box">
             <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">

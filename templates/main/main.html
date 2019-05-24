@@ -7,7 +7,6 @@
 {% block head %}
 <link rel="stylesheet" href="../../static/main.css">
 <link rel="stylesheet" type="text/css" href="../../static/webslides.css"/>
-
 <script type="text/javascript" src="../../static/webslides.js"></script>
 
 <script type="text/javascript" src="../../static/webslides.min.js"></script>
@@ -15,7 +14,8 @@
 
 {% block body %}
 <article id="webslides">
-	<section class="bg-white aligncenter slideInRight">
+
+	<section class="bg-white aligncenter slide">
 		<h1>ERICA Trend</h1>
 		<form action="{{ url_for('search.process') }}" method="get">
 			<div id = "search_box" class="input-group mb-3">
