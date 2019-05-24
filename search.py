@@ -2,6 +2,7 @@ from flask import (Blueprint, render_template, request, url_for, send_file)
 from pytrends.request import TrendReq
 import pymysql
 import os
+import re
 
 bp = Blueprint('search', __name__, url_prefix='/search')
 
@@ -27,7 +28,7 @@ def process():
 
 
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
-    connection = pymysql.connect(host='localhost',
+    connection = pymysql.connect(host='ericatrend.net',
                                  user='erica',
                                  password='hosugongwon',
                                  db='notebook_db',
@@ -36,7 +37,7 @@ def process():
 
     with connection.cursor() as cursor:
         # Read a single record
-        sql = "SELECT `newegg_id`, `brand`, `model` FROM `for_presentation_products` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
+        sql = "SELECT * FROM `for_presentation_products` WHERE " + generate_sql(keyword) + " LIMIT {0}, {1}".format((page-1)*10, 10)
         cursor.execute(sql)
         result = cursor.fetchall()
 
@@ -52,6 +53,12 @@ def process():
                 number_of_product = cursor.fetchone()['count(*)']
         finally:
             connection.close()
+        expression = re.compile('\d+\.?\d*')
+        for item in result:
+            if item['weight']:
+                value = expression.match(item['weight'])[0]
+                if value:
+                    item['weight'] = '{:0.2f}kg'.format(float(value)*0.453592)
         return products(keyword, page, number_of_product, result)
 
     # 검색하여 하나만 일치하면  페이지, 두개 이상 일치하면 product_view page
@@ -92,7 +99,7 @@ def product_detail(newegg_id=None):
     if not newegg_id: # 프로그램 순서상으로 자동으로 받아왔을 경우가 아닌 경우
         newegg_id = request.args.get('newegg_id')
     # SQL 커서를 전역으로 가지고 있도록 고쳐야함
-    connection = pymysql.connect(host='localhost',
+    connection = pymysql.connect(host='ericatrend.net',
                                  user='erica',
                                  password='hosugongwon',
                                  db='notebook_db',
@@ -167,7 +174,7 @@ def compare():
         parameters.append(request.args.get('second_range').split(';'))
 
 
-    connection = pymysql.connect(host='localhost',
+    connection = pymysql.connect(host='ericatrend.net',
                                  user='erica',
                                  password='hosugongwon',
                                  db='notebook_db',
@@ -203,7 +210,7 @@ def compare_process():
         parameters.append(request.form['second_range'].split(';'))
 
 
-    connection = pymysql.connect(host='localhost',
+    connection = pymysql.connect(host='ericatrend.net',
                                  user='erica',
                                  password='hosugongwon',
                                  db='notebook_db',

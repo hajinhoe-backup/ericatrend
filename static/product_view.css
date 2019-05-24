@@ -71,10 +71,23 @@ section .card img{
 }
 
 #suggestions .badge{
-    background-color: #424242;
+    background-color: #1a234b;
     padding: 5px;
 }
 
 #suggestions a:hover{
+    text-decoration: none;
+}
+
+.page-item a{
+    color: #1a234b;
+}
+
+.product_card a{
+    color: black;
+}
+
+.product_card a:hover{
+    color: #9575CD;
     text-decoration: none;
 }

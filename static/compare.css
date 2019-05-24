@@ -4,12 +4,12 @@
 
 .nav-item{
     border-radius: 25px 25px 25px 25px;
-    background-color: #E0E0E0;
+    background-color: #C5CAE9;
     margin: 1px;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link{
-    background-color: #424242;
+    background-color: #1A237E;
     border-radius: 25px 25px 25px 25px;
     margin: 1px;
 }
@@ -17,7 +17,7 @@
 #compare_option_box{
     overflow: hidden;
     padding: 20px;
-    background-color: #ECEFF1;
+    background-color: #E8EAF6;
     border-radius: 20px 20px 20px 20px;
 }
 
@@ -35,12 +35,12 @@ button[type="submit"] {
     padding: 10px;
     float: right;
     border-radius: 25px 25px 25px 25px;
-    background-color: #424242;
+    background-color: #C5CAE9;
     border: none;
 }
 
 button[type="submit"]:hover {
     border-radius: 25px 25px 25px 25px;
-    background-color: #757575;
+    background-color: #1A237E;
     border: none;
 }

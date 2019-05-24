@@ -37,24 +37,31 @@
         <div id="related_keywords">
         </div>
             {% for item in products_info %}
-            <a href="{{ url_for('search.product_detail', newegg_id=item['newegg_id']) }}">
-            <div class="card mb-12">
-                <div class="row no-gutters">
-                    <div class="col-md-2">
-			    <img src="images/{{item['newegg_id']}}.png" class="card-img" alt="{{ item['brand'] }} {{ item['model'] }}">
-                    </div>
+            <div class="product_card">
+                <a href="{{ url_for('search.product_detail', newegg_id=item['newegg_id']) }}">
+                <div class="card mb-12">
+                    <div class="row no-gutters">
+                        <div class="col-md-2">
+                    <img src="images/{{item['newegg_id']}}.png" class="card-img" alt="{{ item['brand'] }} {{ item['model'] }}">
+                        </div>
 
-                    <div class="col-md-10">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ item['model'] }}</h5>
-                            <p class="card-text">브랜드 : {{ item['brand'] }}</p>
-                            <p class="card-text"><small class="text-muted">출시일 제공 준비중</small></p>
+                        <div class="col-md-10">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item['model'] }}</h5>
+                                <p class="card-text">브랜드 : {{ item['brand'] }}</p>
+                                <div class="product_spec">
+                                {% for info in item %}
+                                    {% if item[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
+                                        <span>{{ item[info] }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
-            </div>
                 </a>
+            </div>
             {% endfor %}
         </section>
         <nav id="page_nav" aria-label="Page navigation example">
