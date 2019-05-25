@@ -108,22 +108,22 @@
                 <form class="search_form" action="{{ url_for('search.compare_process') }}" method="post">
                     <select class="form-control" id="first_brand" name="first_brand">
                         {% for brand in brands %}
-                            <option>{{ brand['brand'] }}</option>
+                            <option {% if brand['brand'] == 'Apple' %}selected="selected"{% endif %}>{{ brand['brand'] }}</option>
                         {% endfor %}
                     </select>
                     <select class="form-control" id="second_brand" name="second_brand">
                         {% for brand in brands %}
-                            <option>{{ brand['brand'] }}</option>
+                            <option {% if brand['brand'] == 'Dell' %}selected="selected"{% endif %}>{{ brand['brand'] }}</option>
                         {% endfor %}
                     </select>
                     <select class="form-control" id="third_brand" name="third_brand">
                         {% for brand in brands %}
-                            <option>{{ brand['brand'] }}</option>
+                            <option {% if brand['brand'] == 'Lenovo' %}selected="selected"{% endif %}>{{ brand['brand'] }}</option>
                         {% endfor %}
                     </select>
                     <select class="form-control" id="forth_brand" name="forth_brand">
                         {% for brand in brands %}
-                            <option>{{ brand['brand'] }}</option>
+                            <option {% if brand['brand'] == 'LG' %}selected="selected"{% endif %}>{{ brand['brand'] }}</option>
                         {% endfor %}
                     </select>
                     <input type="hidden" name="compare_type" value="brand">
@@ -131,7 +131,7 @@
                 </form>
               </div>
               <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                  <p>가격대를 3개 선택할 수 있습니다.</p>
+                  <p>가격대를 2개 선택할 수 있습니다.</p>
                   <form class="search_form" action="{{ url_for('search.compare_process') }}">
                         <input type="text" class="js-range-slider" name="first_range" value=""
                             data-type="double"
@@ -145,8 +145,8 @@
                             data-type="double"
                             data-min="0"
                             data-max="2000"
-                            data-from="0"
-                            data-to="500"
+                            data-from="1000"
+                            data-to="1500"
                             data-grid="true"
                         />
                       <input type="hidden" name="compare_type" value="price">
