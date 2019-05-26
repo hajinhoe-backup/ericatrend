@@ -18,10 +18,13 @@
 {% endblock %}
 
 {% block body %}
+    <nav class="navbar navbar-fixed-top" id="compare_nav">
+        <div class="container">
+            <h3><a href="{{ url_for('main.main') }}">ERICA TREND</a></h3>
+        </div>
+    </nav>
     <div id = "contents">
-        <nav>
-            <a href="{{ url_for('main.main') }}">메인 화면</a>
-        </nav>
+
         <header>
             <h1>트랜드 검색 - {{ keyword }}</h1>
             <form action="{{ url_for('search.process') }}" method="get">

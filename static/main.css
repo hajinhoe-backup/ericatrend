@@ -9,6 +9,10 @@ body{
     text-align: center;
 }
 
+.main_logo {
+    width: 400px;
+}
+
 #search_box{
     margin: 25px;
 }
@@ -24,4 +28,5 @@ body{
 
 #tool_box{
     text-align: center;
+    margin-top: 20px;
 }

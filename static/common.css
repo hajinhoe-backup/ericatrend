@@ -40,14 +40,15 @@ iframe {
 
 footer{
     text-align: center;
+    height: 70px;
+    margin-top: auto;
+    background-color: #566270;
 }
 
 footer span{
-    background-color: #1a234b;
-    border-radius: 25px 25px 25px 25px;
+    position: relative;
     color: white;
-    margin: 20px;
-    padding: 5px 20px 5px 20px;
+    top: 35%;
 }
 
 .btn-outline-secondary{

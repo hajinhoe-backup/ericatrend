@@ -1,3 +1,5 @@
+* { font-family: 'Noto Sans KR', sans-serif; }
+
 body{
 
 }
@@ -7,13 +9,14 @@ body{
     margin: auto;
 }
 
-nav{
-    color: black;
-    padding: 10px;
+.navbar {
+    background-color: #5C6BC0;
+    height: 70px;
 }
 
-nav a{
-    padding-bottom: 3px;
+#compare_nav h3 a {
+    color: white;
+    text-decoration: none;
 }
 
 header{

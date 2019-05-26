@@ -1,5 +1,14 @@
 * { font-family: 'Noto Sans KR', sans-serif; }
 
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+}
+
 .navbar {
     background-color: #5C6BC0;
     height: 70px;
@@ -13,6 +22,10 @@
 #button-addon2 {
     border-color: #adb5bd;
     color: white;
+}
+
+.compare_header {
+
 }
 
 #generate_alert:hover + .alert-danger {
@@ -45,6 +58,7 @@
     padding: 20px;
     background-color: #E8EAF6;
     border-radius: 20px 20px 20px 20px;
+    transition: 0.5s;
 }
 
 select{
@@ -70,3 +84,4 @@ button[type="submit"]:hover {
     background-color: #1A237E;
     border: none;
 }
+

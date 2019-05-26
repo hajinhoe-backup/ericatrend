@@ -16,15 +16,17 @@
 <article id="webslides">
 
 	<section class="bg-white aligncenter slide">
-		<h1>ERICA Trend</h1>
-		<form action="{{ url_for('search.process') }}" method="get">
-			<div id = "search_box" class="input-group mb-3">
-				<input name="search_words" type="text" class="form-control" placeholder="노트북 브랜드나 모델명을 입력하세요." aria-label="Search Input" aria-describedby="button-addon2">
-				<div class="input-group-append">
-					<button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
+		<img class="size-30 aligncenter" src="../../static/images/main_logo.png" style="margin-bottom: 0;">
+		<div class="aligncenter size-60">
+			<form action="{{ url_for('search.process') }}" method="get">
+				<div id = "search_box" class="input-group mb-3">
+					<input name="search_words" type="text" class="form-control" placeholder="노트북 브랜드나 모델명을 입력하세요." aria-label="Search Input" aria-describedby="button-addon2">
+					<div class="input-group-append">
+						<button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 		<div id="tool_box">
 			<a href="{{ url_for('search.compare') }}"><i class="fas fa-crosshairs"></i> 비교 검색하기</a>
 		</div>
