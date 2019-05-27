@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="../../static/main.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../../static/main.css">
 <link rel="stylesheet" type="text/css" href="../../static/webslides.css"/>
+
 <script type="text/javascript" src="../../static/webslides.js"></script>
 
 <script type="text/javascript" src="../../static/webslides.min.js"></script>
@@ -14,13 +16,13 @@
 
 {% block body %}
 <article id="webslides">
-
-	<section class="bg-white aligncenter slide">
-		<img class="size-30 aligncenter" src="../../static/images/main_logo.png" style="margin-bottom: 0;">
+	<section class="section-1 bg-white aligncenter slide">
+		<img class="test" src="../../static/images/main_logo.png"
+			 style="max-width: 520px; min-width: 320px;text-align: center;width:100%;margin-left: auto;margin-right: auto;">
 		<div class="aligncenter size-60">
 			<form action="{{ url_for('search.process') }}" method="get">
-				<div id = "search_box" class="input-group mb-3">
-					<input name="search_words" type="text" class="form-control" placeholder="노트북 브랜드나 모델명을 입력하세요." aria-label="Search Input" aria-describedby="button-addon2"  style="font-size: 1.8rem;">
+				<div id="search_box" class="input-group mb-3" style="min-width: 320px;margin-left: auto;margin-right: auto;">
+					<input name="search_words" type="text" class="form-control" placeholder="노트북 브랜드나 모델명을 입력하세요." aria-label="Search Input" aria-describedby="button-addon2"  style="font-size: 0.8em;">
 					<div class="input-group-append">
 						<button type="submit" class="btn btn-outline-secondary" id="button-addon2"><i class="fas fa-search"></i></button>
 					</div>
@@ -31,7 +33,7 @@
 			<a href="{{ url_for('search.compare') }}"><i class="fas fa-crosshairs"></i> 비교 검색하기</a>
 		</div>
 	</section>
-	<section class="bg-gradient-gray slideInRight">
+	<section class="section-2 bg-gradient-gray slideInRight">
 
 		<!-- .wrap = container 1200px -->
 
@@ -78,7 +80,7 @@
 		</div>
 
 	</section>
-	<section class="fullscreen slideInRight">
+	<section class="section-3 fullscreen slideInRight">
 		<div class="card-50">
 			<img src="/static/review.png">
 			<div class="flex-content">
@@ -94,7 +96,7 @@
 		</div>
 
 	</section>
-	<section class="fullscreen slideInRight">
+	<section class="section-4 fullscreen slideInRight">
 		<div class="card-50">
 			<div class="flex-content">
 				<h2><strong>Scenario #2</strong></h2>
@@ -109,135 +111,6 @@
 
 			</div>
 			<img src="/static/kibana.png">
-
-		</div>
-
-	</section>
-	<section class="bg-light slideInRight slide-top">
-
-		<!-- .wrap = container 1200px -->
-
-		<div class="grid sm size-80">
-
-			<div class="column">
-
-				<h2><strong>Scenario #2 </strong></h2>
-
-				<h2>Without<br>ERICA Trend</h2>
-
-				<p>I Don't Wanna Do This All Day..</p>
-
-			</div>
-
-			<div class="column">
-
-				<ul class="work">
-
-					<li class="work-label">
-
-						<p class="work-title">Product</p>
-
-						<p class="work-client">Pros</p>
-
-						<p class="work-client">Cons</p>
-
-						<p class="work-date">Date</p>
-
-					</li>
-
-					<li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">GIGABYTE</p>
-
-							<p class="work-client">Battery, Screen, Keyboard..?</p>
-
-							<p class="work-client">Cam Angle</p>
-
-							<p class="work-date">190605</p>
-
-						</a>
-
-					</li>
-
-					<li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">MSI</p>
-
-							<p class="work-client">High Performance</p>
-
-							<p class="work-client">WiFi..?</p>
-
-							<p class="work-date">190603</p>
-
-						</a>
-
-					</li><li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">Asus ZenBook14</p>
-
-							<p class="work-client">Light Weight, High Performance</p>
-
-							<p class="work-client">Cooling</p>
-
-							<p class="work-date">190602</p>
-
-						</a>
-
-					</li><li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">GIGABYTE</p>
-
-							<p class="work-client">Battery, Screen, Keyboard..?</p>
-
-							<p class="work-client">Cam Angle</p>
-
-							<p class="work-date">190605</p>
-
-						</a>
-
-					</li><li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">Lenovo G50-45</p>
-
-							<p class="work-client">..?</p>
-
-							<p class="work-client">Keyboard</p>
-
-							<p class="work-date">190601</p>
-
-						</a>
-
-					</li><li>
-
-						<a href="#" rel="external">
-
-							<p class="work-title">Lenovo Y50</p>
-
-							<p class="work-client">Keyboard</p>
-
-							<p class="work-client">Slow HDD</p>
-
-							<p class="work-date">190531</p>
-
-						</a>
-
-					</li>
-
-				</ul>
-
-			</div>
-
-
 
 		</div>
 

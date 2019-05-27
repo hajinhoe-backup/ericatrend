@@ -4,6 +4,12 @@ body{
 
 }
 
+.container{
+    padding-left: 0;
+    padding-right: 0;
+    max-width:1280px;
+}
+
 #contents{
     max-width: 80%;
     margin: auto;
@@ -47,12 +53,6 @@ section .card img{
     height: 100%;
 }
 
-.container {
-    max-width: 80%;
-    margin: auto;
-    padding: 0px;
-}
-
 #page_nav{
     text-align: center;
 }
@@ -86,15 +86,16 @@ section .card img{
     text-decoration: none;
 }
 
+#suggestions h5{
+    margin:0.5rem;
+}
+
 #product_content {
     position: relative;
     height: 100%;
 }
 
 .product_spec {
-    position: absolute;
-    bottom: 0px;
-    padding-bottom: 1rem;
 }
 
 #product_content .card-text{

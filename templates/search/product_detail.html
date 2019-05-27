@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/product_view.css">
     <link rel="stylesheet" href="../../static/product_detail.css">
     <script>
@@ -92,7 +93,7 @@
                                             {% if i < review['star'] %}
                                             <i class="fas fa-star" style="color: #ffe635"></i>
                                             {% else %}
-                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star" style="color: lightgrey"></i>
                                             {% endif %}
                                             {% endfor %}
                                             </span></h5>
@@ -126,6 +127,8 @@
 
     </div>
     <footer>
-        <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
+        <div>
+            <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
+        </div>
     </footer>
 {% endblock %}

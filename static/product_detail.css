@@ -3,11 +3,18 @@
 }
 
 .container {
-    max-width: 80%;
+    width: 100%;
+    max-width: 1280px;
     margin: auto;
-    padding: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
-
+@media ( max-width: 768px ) {
+  .container *{
+      text-align: center;
+    margin: auto;
+}
+}
 #helpful_review > div{
     -moz-column-count: 2;
     -webkit-column-count: 2;
@@ -25,3 +32,4 @@
 section .alert{
     border-radius: 25px;
 }
+
