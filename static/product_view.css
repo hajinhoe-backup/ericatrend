@@ -1,4 +1,4 @@
-* { font-family: 'Noto Sans KR', sans-serif; }
+* { font-family: 'Noto Sans KR', sans-serif; !important;}
 
 body{
 
@@ -78,6 +78,27 @@ section .card img{
 
 #suggestions a:hover{
     text-decoration: none;
+}
+
+#product_content {
+    position: relative;
+    height: 100%;
+}
+
+.product_spec {
+    position: absolute;
+    bottom: 0px;
+    padding-bottom: 1rem;
+}
+
+#product_content .card-text{
+    font-size: 0.9rem;
+    color: #4e4e4e;
+}
+
+#product_content_header i{
+    position: absolute;
+    right: 2rem;
 }
 
 .page-item a{

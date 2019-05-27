@@ -49,12 +49,21 @@
                         </div>
 
                         <div class="col-md-10">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ item['model'] }}</h5>
-                                <p class="card-text">브랜드 : {{ item['brand'] }}</p>
+                            <div id="product_content" class="card-body">
+                                <div id="product_content_header">
+                                    <h5 class="card-title">
+                                    {{ item['brand'] }} {{ item['model'] }}
+                                        {% if item['price'] %}
+                                            <i class="fas fa-dollar-sign">{{ item['price'] }}</i>
+                                        {% endif %}
+                                    </h5>
+                                </div>
+
+
+                                <p class="card-text">또는 {{ item['info_title'] }}</p>
                                 <div class="product_spec">
                                 {% for info in item %}
-                                    {% if item[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight', 'price']%}
+                                    {% if item[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
                                         <span>{{ item[info] }}</span>
                                     {% endif %}
                                 {% endfor %}
