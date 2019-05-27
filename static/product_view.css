@@ -47,6 +47,12 @@ section .card img{
     height: 100%;
 }
 
+.container {
+    max-width: 80%;
+    margin: auto;
+    padding: 0px;
+}
+
 #page_nav{
     text-align: center;
 }

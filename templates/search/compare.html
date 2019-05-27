@@ -65,7 +65,7 @@
 {% block body %}
         <nav class="navbar navbar-fixed-top" id="compare_nav">
             <div class="container">
-                <h3><a href="{{ url_for('main.main') }}">ERICA TREND</a></h3>
+                 <img src="../../static/images/nav_logo.png" onclick="location.href='/' " style="max-height: 3.5rem; cursor: pointer;">
                 <form action="{{ url_for('search.process') }}" method="get">
             <div id = "search_box" class="input-group mb-3">
                 <input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
@@ -83,19 +83,11 @@
         <header>
             <div class="compare_header">
                 <h1>트렌드 검색 : 비교하기 <a id="generate_alert" class="far fa-sm fa-question-circle" style="color:grey;"></a></h1>
-                <div id="alert" class="alert alert-info" style="display: none;" role="alert">
+                <div id="alert" class="alert alert-info" role="alert">
                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                   <span class="sr-only">Error:</span>
                   브랜드와 가격대별 특성을 알아보기 위해서 비교하기를 이용해보세요. 검색 결과가 선택창 아래에 표시됩니다.
                 </div>
-                <script>
-                    $('#generate_alert').mouseover(function () {
-                        $('.alert').fadeIn();
-                    });
-                    $('#generate_alert').mouseleave(function () {
-                        $('.alert').fadeOut();
-                    });
-                </script>
             </div>
         </header>
         <ul class="nav nav-tabs nav-justified">
