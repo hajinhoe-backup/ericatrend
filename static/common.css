@@ -38,13 +38,15 @@ iframe {
     height: 500px;
 }
 
-footer{
+footer div{
     height: 50px;
     text-align: center;
     background-color: #566270;
 }
 
 footer span{
+    display: inline-block;
+    margin-top: 13px;
     color: white;
 }
 
