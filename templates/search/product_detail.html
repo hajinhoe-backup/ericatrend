@@ -79,7 +79,7 @@
                 </div>
             </div>
             <div id="recent_review">
-            <h3>최근 리뷰</h3><a href="https://www.newegg.com/p/{{ product['newegg_id'] }}">모든 리뷰 확인하기</a>
+            <h3 onclick="location.href='https://www.newegg.com/p/{{ product['newegg_id'] }}'">최근 리뷰 <i class="fas fa-chevron-right"></i></h3>
                 <div id="helpful_review">
                     <div>
                         {% for review in reviews %}
@@ -91,7 +91,7 @@
                                             <span class="product_star">
                                             {% for i in range(5) %}
                                             {% if i < review['star'] %}
-                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star" style="color: #ffe635"></i>
                                             {% else %}
                                             <i class="far fa-star"></i>
                                             {% endif %}
