@@ -20,8 +20,6 @@ body {
 }
 
 #button-addon2 {
-    border-color: #adb5bd;
-    color: white;
 }
 
 .compare_header {
@@ -37,15 +35,13 @@ body {
 }
 
 .nav-item{
-    border-radius: 25px 25px 25px 25px;
-    background-color: #C5CAE9;
-    margin: 1px;
+    border-radius: 25px 25px 0px 0px;
+    background-color: lightgrey;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link{
-    background-color: #1A237E;
-    border-radius: 25px 25px 25px 25px;
-    margin: 1px;
+.nav .nav-link.active, .nav .show > .nav-link{
+    background-color: #E8EAF6;
+    border-radius: 25px 25px 0px 0px;
 }
 
 #search_box {
@@ -57,7 +53,7 @@ body {
     overflow: hidden;
     padding: 20px;
     background-color: #E8EAF6;
-    border-radius: 20px 20px 20px 20px;
+    border-radius: 0px 0px 20px 20px;
     transition: 0.5s;
 }
 
