@@ -1,28 +1,20 @@
 * { font-family: 'Noto Sans KR', sans-serif; }
 
-html, body {
-    height: 100%;
-}
-
-body {
-    display: flex;
-    flex-flow: column;
-}
-
-.navbar {
+nav{
     background-color: #5C6BC0;
-    height: 70px;
+    height: 56px;
 }
 
-.container {
+#compare_nav_box{
+    width: 1280px;
     max-width: 80%;
     margin: auto;
-    padding: 0px;
 }
 
-#compare_nav h3 a {
-    color: white;
-    text-decoration: none;
+nav  form{
+    display: inline-block;
+    margin-top: 9px;
+    width: 100%;
 }
 
 #button-addon2 {
@@ -38,26 +30,13 @@ body {
     color: black;
 }
 
-.nav-item{
-    border-radius: 25px 25px 0px 0px;
-    background-color: lightgrey;
-}
 
-.nav .nav-link.active, .nav .show > .nav-link{
-    background-color: #E8EAF6;
-    border-radius: 25px 25px 0px 0px;
-}
-
-#search_box {
-    color: white;
-    margin-top: 3%;
-}
 
 #compare_option_box{
     overflow: hidden;
     padding: 20px;
     background-color: #E8EAF6;
-    border-radius: 0px 0px 20px 20px;
+    border-radius: 0 0 20px 20px;
     transition: 0.5s;
 }
 
@@ -85,3 +64,27 @@ button[type="submit"]:hover {
     border: none;
 }
 
+#pills-home-tab.nav-link{
+    border-radius: 25px 0 0 0;
+}
+
+#item1{
+    border-radius: 25px 0 0 0;
+}
+
+#pills-profile-tab{
+    border-radius: 0 25px 0 0;
+}
+
+#item2{
+    border-radius: 0 25px 0 0;
+}
+
+
+.nav-item{
+    background-color: lightgrey;
+}
+
+.nav .nav-link.active, .nav .show > .nav-link{
+    background-color: #E8EAF6;
+}

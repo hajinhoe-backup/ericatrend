@@ -39,16 +39,13 @@ iframe {
 }
 
 footer{
+    height: 50px;
     text-align: center;
-    height: 70px;
-    margin-top: auto;
     background-color: #566270;
 }
 
 footer span{
-    position: relative;
     color: white;
-    top: 35%;
 }
 
 .btn-outline-secondary{
