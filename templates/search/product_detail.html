@@ -20,11 +20,12 @@
 {% endblock %}
 
 {% block body %}
+    <nav class="navbar navbar-fixed-top" id="compare_nav">
+        <div class="container">
+            <h3><a href="{{ url_for('main.main') }}">ERICA TREND</a></h3>
+        </div>
+    </nav>
     <div id = "contents">
-
-        <nav>
-            <a href="{{ url_for('main.main') }}">메인 화면</a>
-        </nav>
         <header>
             <h1>트랜드 검색 : {{ product['brand'] }} {{ product['model'] }}</h1>
             <form action="{{ url_for('search.process') }}" method="get">
@@ -37,14 +38,28 @@
             </form>
         </header>
         <section id="result_box">
-            <h2>제품 상세 검색 결과</h2>
+            <img src="../../static/images/{{ product['newegg_id'] }}.png">
+            <h2>{{ product['price']}}</h2>
                 <h3>기기의 사양</h3>
                 <div class="product_spec">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">Spec</th>
+                            <th style="width: 80%;">Content</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                 {% for info in product %}
                     {% if product[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
-                        <span>{{ product[info] }}</span>
+                        <tr>
+                            <td style="text-transform: capitalize;">{{ info }}</td>
+                            <td>{{ product[info] }}</td>
+                        </tr>
                     {% endif %}
                 {% endfor %}
+                    </tbody>
+                    </table>
                 </div>
             <div id="stars_and_price">
                 <h3>별점과 가격</h3>
@@ -64,7 +79,7 @@
                 </div>
             </div>
             <div id="recent_review">
-            <h3>최근 리뷰</h3>
+            <h3>최근 리뷰</h3><a href="https://www.newegg.com/p/{{ product['newegg_id'] }}">모든 리뷰 확인하기</a>
                 <div id="helpful_review">
                     <div>
                         {% for review in reviews %}
@@ -82,7 +97,7 @@
                                             {% endif %}
                                             {% endfor %}
                                             </span></h5>
-                                        <p class="card-text">{{ review['pros'] }} {{ review['cons'] }}</p>
+                                        <p class="card-text">장점 : {{ review['pros'] }}<br>단점 : {{ review['cons'] }}</p>
                                         <p class="card-text good_review"><i class="far fa-thumbs-up"></i> {{ review['helpful'] + review['unhelpful'] }}명 중 {{ review['helpful'] }}명이 추천한 리뷰</p>
                                     </div>
                                 </div>
@@ -109,8 +124,9 @@
                 </div>
             </div>
         </section>
-        <footer>
-            <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
-        </footer>
+
     </div>
+    <footer>
+        <span>모든 저작권이 ERICATREND에 있습니다. 무단 전제를 금합니다.</span>
+    </footer>
 {% endblock %}
