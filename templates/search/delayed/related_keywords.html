@@ -1,8 +1,10 @@
-	    <div id="suggestions">
-			<span>이런 검색어는 어떠세요?</span><br>
-			{% for i in related_keyword %}
-            <a href="{{ url_for('search.process', search_words=i) }}">
-			<span class="badge badge-info">{{ i }}</span>
-            </a>
-			{% endfor %}
+	    <div id="suggestions" class="card mb-12" style="padding: 0.75rem;">
+			<h5><i class="far fa-lightbulb"></i> 이런 검색어는 어떠세요?</h5>
+				<div class="row no-gutters">
+					{% for i in related_keyword %}
+						<a href="{{ url_for('search.process', search_words=i) }}">
+							<span class="badge badge-info">{{ i }}</span>
+						</a>
+					{% endfor %}
+				</div>
 		</div>

@@ -68,12 +68,12 @@ section .card img{
 }
 
 #suggestions{
-    margin: 10px;
 }
 
 #suggestions .badge{
     background-color: #1a234b;
-    padding: 5px;
+    margin-left: 3px;
+    padding: 5px 10px 5px 10px;
 }
 
 #suggestions a:hover{
