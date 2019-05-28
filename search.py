@@ -130,7 +130,16 @@ def product_detail(newegg_id=None):
         if value:
             result['weight'] = '{:0.2f}kg'.format(float(value[0]) * 0.453592)
 
-    return render_template('search/product_detail.html', product=result, reviews=reviews, related_keyword=related_keyword)
+    product_specs = {'color': '색상',
+                     'os': '운영체제',
+                     'cpu': 'CPU',
+                     'screen': '스크린',
+                     'memory': '메모리',
+                     'storage': '저장공간',
+                     'vga': '그래픽카드',
+                     'weight': '무게'}
+
+    return render_template('search/product_detail.html', product=result, reviews=reviews, related_keyword=related_keyword, product_specs=product_specs)
 
 @bp.route('/detail/word_cloud', methods=['get'])
 def delayed_word_cloud():

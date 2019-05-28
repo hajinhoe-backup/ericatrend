@@ -1,5 +1,13 @@
 * { font-family: 'Noto Sans KR', sans-serif; }
 
+html, body{
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-flow: column;
+}
+
 nav{
     background-color: #5C6BC0;
     height: 56px;

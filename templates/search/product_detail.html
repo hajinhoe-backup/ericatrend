@@ -29,6 +29,7 @@
     <div id = "contents">
         <header>
             <h1>트랜드 검색 : {{ product['brand'] }} {{ product['model'] }}</h1>
+            <img onclick="location.href='https://www.newegg.com/p/{{ product['newegg_id'] }}'" id="newegg_logo" src="../../static/images/newegg_logo.png">
             <form action="{{ url_for('search.process') }}" method="get">
             <div id = "search_box" class="input-group mb-3">
                 <input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
@@ -53,7 +54,7 @@
                 {% for info in product %}
                     {% if product[info] and info in ['color', 'os', 'cpu', 'screen', 'memory', 'storage', 'vga', 'weight']%}
                         <tr>
-                            <td style="text-transform: capitalize;">{{ info }}</td>
+                            <td>{{ product_specs.get(info) }}</td>
                             <td>{{ product[info] }}</td>
                         </tr>
                     {% endif %}

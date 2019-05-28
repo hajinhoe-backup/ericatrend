@@ -1,19 +1,36 @@
-.table th{
-
+#newegg_logo {
+    width: 100%;
+    max-width: 120px;
+    float: right;
+    margin: 2%;
+    cursor: pointer;
 }
 
 .container {
-    width: 100%;
+    width: 80%;
     max-width: 1280px;
     margin: auto;
     padding-left: 0px;
     padding-right: 0px;
 }
-@media ( max-width: 768px ) {
+
+#contents > header > h1{
+    min-width: 500px;
+    float: left;
+    margin: 2%;
+}
+
+@media ( max-width: 843px ) {
   .container *{
       text-align: center;
     margin: auto;
 }
+    #newegg_logo {
+        display: none;
+    }
+    #contents h1 {
+        font-size: 1.5rem;
+    }
 }
 #helpful_review > div{
     -moz-column-count: 2;

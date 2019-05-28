@@ -29,8 +29,11 @@ header{
     margin: 30px 0 10px 0;
 }
 
-header h1{
-    margin: 20px;
+
+
+header h5 {
+    margin-right: 0px;
+    text-align: right;
 }
 
 header #search_box input{
