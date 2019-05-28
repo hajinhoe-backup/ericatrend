@@ -21,15 +21,24 @@
 {% endblock %}
 
 {% block body %}
-    <nav class="navbar navbar-fixed-top" id="compare_nav">
-        <div class="container">
-            <img src="../../static/images/nav_logo.png" onclick="location.href='/'" style="max-height: 3.5rem; cursor: pointer;">
+    <nav class="upper_nav">
+        <div class="align-middle" id="compare_nav_box">
+            <div class="row">
+                <div class="col-4">
+                <a href="/"><img src="../../static/images/nav_logo.png" style="max-height: 3.5rem; cursor: pointer;"></a>
+                </div>
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <a id="see_it_newegg" href="https://www.newegg.com/p/{{ product['newegg_id'] }}">
+                        <span>newegg에서 보기</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
     <div id = "contents">
         <header>
             <h1>트랜드 검색 : {{ product['brand'] }} {{ product['model'] }}</h1>
-            <img onclick="location.href='https://www.newegg.com/p/{{ product['newegg_id'] }}'" id="newegg_logo" src="../../static/images/newegg_logo.png">
             <form action="{{ url_for('search.process') }}" method="get">
             <div id = "search_box" class="input-group mb-3">
                 <input name="search_words" type="text" class="form-control" placeholder="검색어" aria-label="Search Input" aria-describedby="button-addon2">
@@ -80,7 +89,7 @@
                 </div>
             </div>
             <div id="recent_review">
-            <h3 onclick="location.href='https://www.newegg.com/p/{{ product['newegg_id'] }}'">최근 리뷰 <i class="fas fa-chevron-right"></i></h3>
+            <h3>최근 리뷰</h3>
                 <div id="helpful_review">
                     <div>
                         {% for review in reviews %}

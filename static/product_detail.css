@@ -1,9 +1,12 @@
-#newegg_logo {
-    width: 100%;
-    max-width: 120px;
-    float: right;
-    margin: 2%;
-    cursor: pointer;
+#see_it_newegg img{
+    height: 24px;
+}
+
+#see_it_newegg{
+    text-decoration: none;
+    color: white;
+    float:right;
+    margin-top: 14px;
 }
 
 .container {

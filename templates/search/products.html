@@ -18,13 +18,23 @@
 {% endblock %}
 
 {% block body %}
+    <!--
     <nav class="navbar navbar-fixed-top" id="compare_nav">
         <div class="container">
              <img src="../../static/images/nav_logo.png" onclick="location.href='/'" style="max-height: 3.5rem; cursor: pointer;">
         </div>
+    </nav>-->
+    <nav class="upper_nav">
+        <div class="align-middle" id="compare_nav_box">
+            <div class="row">
+                <div class="col-4">
+                <a href="/"><img src="../../static/images/nav_logo.png" style="max-height: 3.5rem; cursor: pointer;"></a>
+                </div>
+                <div class="col-8"></div>
+            </div>
+        </div>
     </nav>
     <div id = "contents">
-
         <header>
             <h1>트랜드 검색 - {{ keyword }}</h1>
             <form action="{{ url_for('search.process') }}" method="get">

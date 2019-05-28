@@ -15,14 +15,21 @@ body{
     margin: auto;
 }
 
-.navbar {
+.upper_nav{
     background-color: #5C6BC0;
-    height: 70px;
+    height: 56px;
 }
 
-#compare_nav h3 a {
-    color: white;
-    text-decoration: none;
+#compare_nav_box{
+    width: 1280px;
+    max-width: 80%;
+    margin: auto;
+}
+
+.upper_nav form{
+    display: inline-block;
+    margin-top: 9px;
+    width: 100%;
 }
 
 header{
@@ -32,7 +39,7 @@ header{
 
 
 header h5 {
-    margin-right: 0px;
+    margin-right: 0;
     text-align: right;
 }
 
@@ -90,7 +97,7 @@ section .card img{
 }
 
 #suggestions h5{
-    margin:0.5rem;
+    margin-left:0.5rem;
 }
 
 #product_content {
