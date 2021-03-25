@@ -34,7 +34,7 @@ pycparser==2.19
 pyOpenSSL==18.0.0
 pyparsing==2.2.2
 pyperclip==1.6.5
-PyYAML==5.1
+PyYAML==5.4
 requests==2.21.0
 ruamel.yaml==0.15.89
 selenium==2.53.6
