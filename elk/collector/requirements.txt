@@ -23,7 +23,7 @@ kaitaistruct==0.8
 keepa==0.16.3
 keepaAPI==0.15.10
 ldap3==2.5.2
-lxml==4.3.1
+lxml==4.6.5
 MarkupSafe==1.1.0
 multidict==4.5.2
 numpy==1.16.1
